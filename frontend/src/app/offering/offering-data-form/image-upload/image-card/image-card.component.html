@@ -1,0 +1,15 @@
+<div class="card image-card">
+  <div class="img-container">
+    <img [src]="getImageSrc()" class="image" alt="Image of offering" />
+  </div>
+  <ng-container *ngIf="getImageStatus() != undefined">
+    <button *ngIf="getImageStatus()" type="button" class="btn btn-danger btn-sm card-btn"
+      (click)="deleteImage.emit(getImageWithStatus())">
+      <i class="bi bi-trash"></i>
+    </button>
+    <button *ngIf="!getImageStatus()" type="button" class="btn btn-success btn-sm card-btn"
+      (click)="addImage.emit(getImageWithStatus())">
+      <i class="bi bi-plus-lg"></i>
+    </button>
+  </ng-container>
+</div>

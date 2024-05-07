@@ -1,0 +1,86 @@
+<div class="page-content">
+  <div class="main-landing">
+    <img
+      class="background-image"
+      src="assets/images/landing-background-3.jpg"
+      alt="landing page background image"
+      i18n-alt
+    />
+
+    <div class="title-container">
+      <h1 i18n>The platform for seamless planning</h1>
+      <h3 i18n>
+        The tool to contact all your providers and make your events happen.
+      </h3>
+    </div>
+    <a
+      class="landing-planning-btn btn btn-primary rounded-pill btn-lg"
+      routerLink="/services"
+      i18n
+      >Start planning</a
+    >
+    <a
+      class="landing-provider-btn btn btn-secondary rounded-pill"
+      routerLink="/my-services/create"
+      i18n
+      >Offer your service</a
+    >
+  </div>
+  <a href="{{baseHref}}#landingMoreInfo" class="see-more-icon"><i class="bi bi-chevron-compact-down"
+      id="seeMoreButton"></i></a>
+  <div class="more-info-content" id="landingMoreInfo">
+    <img
+      class="background-more-image"
+      src="assets/images/landing-more-background.jpg"
+    />
+    <div class="more-info-container">
+      <div class="more-info-image">
+        <img src="assets/images/find-services-image.svg" />
+      </div>
+      <div class="more-info-text">
+        <h2 i18n>Explore the best services</h2>
+        <p i18n>
+          We connect organizers like you with exceptional service providers who
+          share your passion and vision.
+        </p>
+      </div>
+    </div>
+    <div class="more-info-container">
+      <div class="more-info-text">
+        <h2 i18n>Easily organize your events</h2>
+        <p i18n>
+          Create your events and add the services you want, we will notify the
+          providers and they will contact you.
+        </p>
+      </div>
+      <div class="more-info-image">
+        <img src="assets/images/organize-event-image.svg" />
+      </div>
+    </div>
+    <div class="more-info-container">
+      <div class="more-info-image">
+        <img src="assets/images/provider-join-image.svg" />
+      </div>
+      <div class="more-info-text">
+        <h2 i18n>Are you a service provider?</h2>
+        <p i18n>
+          Join our platform and unlock new opportunities to grow your business.
+        </p>
+      </div>
+    </div>
+    <div *ngIf="offerings$ | async as offerings" class="recommended-container">
+      <h2 i18n>Some of our most popular services</h2>
+      <offering-list
+        [offerings]="offerings"
+        [isLoading]="!!(isLoading$ | async)"
+        [hidePagination]="true"
+        [maxRows]="1"
+      ></offering-list>
+      <div class="button-container">
+        <button class="btn btn-primary btn-lg" routerLink="/services" i18n>
+          See more
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,40 @@
+<div *ngIf="!isLoading; else loading" class="page-content">
+  <div *ngIf="events && events.length > 0" class="events-container">
+    <event-item *ngFor="let event of events" [event]="event" [offerings]="getEventOfferings(event)"
+      [isLoadingOfferings]="isLoadingOfferings" (clickedEventEvent)="clickedEventEvent.emit($event)"></event-item>
+  </div>
+
+  <!-- No events images -->
+  <div *ngIf="events && events.length === 0" class="no-events-container">
+    <h3 i18n>Here you can see your events and create new ones!</h3>
+    <div class="steps-container">
+      <div class="image-container">
+        <img src="assets/images/create-event-steps/first-step.svg" />
+        <h5 class="text" i18n>CREATE YOUR FIRST EVENT</h5>
+      </div>
+      <div class="image-container second-step">
+        <img src="assets/images/create-event-steps/second-step.svg" />
+        <h5 class="text" i18n>FIND THE BEST SERVICES</h5>
+      </div>
+      <div class="image-container">
+        <img src="assets/images/create-event-steps/third-step.jpg" />
+        <h5 class="text" i18n>ENJOY YOUR EVENT</h5>
+      </div>
+    </div>
+    <div class="create-event-button-container">
+      <a class="btn btn-primary rounded-pill btn-lg" type="button" routerLink="/events/create">
+        <span i18n>Start planning your event</span>
+      </a>
+    </div>
+  </div>
+
+  <paginator *ngIf="events && events.length > 0 && links" [currentPage]="links.getCurrentPage()"
+    [totalPages]="links.getPagesQuantity()" (changeToNextPage)="changePageEvent.emit(links.getNextLink() ?? '')"
+    (changeToPreviousPage)="changePageEvent.emit(links.getPreviousLink() ?? '')"></paginator>
+</div>
+
+<ng-template #loading>
+  <div class="events-container">
+    <event-item *ngFor="let event of [1,2,3,4]" [isLoading]="isLoading"></event-item>
+  </div>
+</ng-template>

@@ -1,0 +1,82 @@
+<mat-card *ngIf="!isLoading && offeringData?.owner as owner; else loadingSkeleton" class="contact-info-card sticky-top">
+  <mat-card-header class="card-header">
+    <mat-card-title class="card-title" i18n>Provider information</mat-card-title>
+  </mat-card-header>
+  <mat-card-content class="card-content">
+    <div class="contact-item owner-row">
+      <img class="profile-picture" *ngIf="owner.profilePicture; else defaultIconTemplate"
+        [src]="owner.profilePicture" />
+      <ng-template #defaultIconTemplate>
+        <i class="bi bi-person-circle profile-picture-default"></i>
+      </ng-template>
+      <span class="provider-name">{{ owner.name }}</span>
+    </div>
+    <div *ngIf="owner.averageRating" class="contact-item">
+      <mat-icon class="star-icon">star</mat-icon>
+      <span class="row-text"></span>
+      <span class="row-text" i18n>{{ owner.averageRating | number : "1.0-2" }} according to reviews from
+        other users</span>
+    </div>
+    <div *ngIf="owner.totalLikes" class="contact-item">
+      <mat-icon class="like-icon">favorite</mat-icon>
+      <span class="row-text" i18n>{{ owner.totalLikes }} users liked services from this provider</span>
+    </div>
+    <div *ngIf="owner.totalEventsWorkedOn > 0" class="contact-item">
+      <mat-icon class="check-icon">check_box</mat-icon>
+      <span class="row-text" i18n>This provider worked on {{ owner.totalEventsWorkedOn }} events so
+        far</span>
+    </div>
+    <mat-divider></mat-divider>
+    <div class="hire-section" *ngIf="offeringData?.offering as offering">
+      <span *ngIf="offering?.deleted; else addToEvent" class="badge text-bg-warning deleted-text p-3 fs-6" i18n>
+        This service has been deleted</span>
+
+      <ng-template #addToEvent>
+        <ng-container *ngIf="!selectedEvent || !isFutureEvent(selectedEvent.event)">
+          <button *ngIf="!loggedUser || (userEvents && userEvents.length > 0)" mat-raised-button color="primary"
+            class="hire-button" (click)="openHireDialog()">
+            <span class="hire-text add-service-btn-text" i18n style="color: white;">Add service to an event</span>
+          </button>
+          <button *ngIf="loggedUser && !(userEvents && userEvents.length > 0)" mat-raised-button color="primary"
+            class="hire-button" (click)="addNewEvent()" style="color: white;">
+            <span class="hire-text" i18n style="color: white;">Create an event</span>
+          </button>
+        </ng-container>
+        <ng-container *ngIf="
+            loggedUser && selectedEvent && isFutureEvent(selectedEvent.event)
+          ">
+          <ng-container *ngIf="!selectedEventHasOffering()">
+            <button mat-raised-button color="primary" class="hire-button" (click)="addToSelectedEvent()">
+              <span class="hire-text" i18n style="color: white;">Add service to {{ selectedEvent.event.name }}</span>
+            </button>
+            <div *ngIf="
+              offering &&
+              offering.maxGuests > 0 &&
+              selectedEvent.event.numberOfGuests > offering.maxGuests
+            " class="warning-text-container">
+              <mat-icon>warning_amber</mat-icon>
+              <span i18n>This service does not have capacity for
+                {{ selectedEvent.event.numberOfGuests }}
+                guests
+              </span>
+            </div>
+
+            <div class="warning-text-container" *ngIf="offering && offering.district != selectedEvent.event.district">
+              <mat-icon>warning_amber</mat-icon>
+              <span i18n>The districts of the service and the event do not match</span>
+            </div>
+          </ng-container>
+
+          <button *ngIf="selectedEventHasOffering()" mat-raised-button color="warn" class="hire-button"
+            (click)="removeFromSelectedEvent()">
+            <span class="hire-text" i18n>Remove service from {{ selectedEvent.event.name }}</span>
+          </button>
+        </ng-container>
+      </ng-template>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+<ng-template #loadingSkeleton>
+  <ngx-skeleton-loader [theme]="{ height: '300px' }" count="1" appearance="line"></ngx-skeleton-loader>
+</ng-template>

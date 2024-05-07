@@ -1,0 +1,90 @@
+.content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-top: 20px;
+  min-height: 60vh;
+  overflow: hidden;
+}
+
+.new-guest-btn-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+.one-column-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 10px;
+  height: 80%;
+}
+
+.empty-guests-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: center;
+  padding-top: 5%;
+  height: 100%;
+}
+
+.table-container {
+  background-color: white;
+  height: 100%;
+  width: 60%;
+  border-radius: 10px;
+  overflow: clip;
+}
+
+th,
+td {
+  padding: 8px;
+  text-align: left;
+}
+
+.PENDINGStyle {
+  background-color: var(--bs-secondary);
+  color: var(--bs-white);
+}
+
+.NEWStyle {
+  background-color: var(--bs-primary);
+  filter: opacity(0.8);
+  color: var(--bs-white);
+}
+
+.ACCEPTEDStyle {
+  background-color: var(--bs-success);
+  color: var(--bs-white);
+}
+
+.REJECTEDStyle {
+  background-color: var(--bs-danger);
+  color: var(--bs-white);
+}
+
+th {
+  font-weight: 500;
+  font-size: 20px;
+}
+
+.first-th {
+  border-radius: 5px 0 0 0;
+}
+
+.td {
+  font-size: 18px;
+}
+
+.mail-input-data-container {
+  width: 100%;
+  padding: 0 0 0 20%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}

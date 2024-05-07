@@ -1,0 +1,95 @@
+<h1 mat-dialog-title i18n>Select events</h1>
+<mat-dialog-content>
+  <ul class="dialog-content">
+    <li *ngFor="let event of events">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>{{ event.name }}</mat-card-title>
+          <mat-card-subtitle>{{
+            event.date | date : "dd/MM/yyyy"
+          }}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-actions>
+          <button
+            *ngIf="!isEventInOffering(event)"
+            class="btn btn-outline-success"
+            (click)="addOfferingToEvent(event)"
+            i18n
+          >
+            Add
+          </button>
+          <button
+            *ngIf="isEventInOffering(event)"
+            class="btn btn-outline-danger"
+            (click)="removeOfferingFromEvent(event)"
+            i18n
+          >
+            Remove
+          </button>
+          <ng-container
+            *ngIf="
+              !isEventInOffering(event) &&
+              !isEventToBeRemoved(event) &&
+              data.offeringData.offering as offering
+            "
+          >
+            <div
+              class="warning-text-container"
+              *ngIf="
+                offering.maxGuests > 0 &&
+                event.numberOfGuests > offering.maxGuests
+              "
+            >
+              <mat-icon>warning_amber</mat-icon>
+              <span class="error" i18n
+                >This service does not have capacity for
+                {{ event.numberOfGuests }} guests</span
+              >
+            </div>
+
+            <div
+              class="warning-text-container"
+              *ngIf="
+                offering.district != event.district ||
+                isEventDateOccupied(event)
+              "
+            >
+              <mat-icon>warning_amber</mat-icon>
+              <div class="warnging-messages-container">
+                <span *ngIf="offering.district != event.district" i18n
+                  >The districts of the service and the event do not match</span
+                >
+                <span *ngIf="isEventDateOccupied(event)" i18n
+                  >The service already has an event on this date</span
+                >
+              </div>
+            </div>
+            <!-- <span *ngIf="isEventDateOccupied(event)" class="error" i18n>
+                            The service already has an event on this date
+                        </span> -->
+          </ng-container>
+        </mat-card-actions>
+      </mat-card>
+    </li>
+  </ul>
+  <button
+    class="btn btn-secondary btn-lg new-event-btn"
+    (click)="addNewEvent()"
+    i18n
+  >
+    Create new event
+  </button>
+</mat-dialog-content>
+<mat-dialog-actions style="justify-content: space-between">
+  <button mat-button mat-dialog-close i18n>Cancel</button>
+  <button
+    mat-raised-button
+    [mat-dialog-close]="modifiedEvents"
+    cdkFocusInitial
+    color="primary"
+    style="color: white"
+    i18n
+  >
+    Confirm
+  </button>
+</mat-dialog-actions>

@@ -1,0 +1,32 @@
+<h1 mat-dialog-title i18n>Add New Guest</h1>
+<div mat-dialog-content class="dialog-content">
+  <mat-form-field>
+    <mat-label i18n>Email</mat-label>
+    <input matInput [formControl]="emailFormControl" required />
+    <mat-error>
+      <ng-container *ngIf="emailFormControl?.errors?.['required']" i18n
+        >Email is required.</ng-container
+      >
+      <ng-container *ngIf="emailFormControl?.errors?.['email']" i18n>
+        Please enter a valid email address.
+      </ng-container>
+      <ng-container *ngIf="emailFormControl?.errors?.['duplicateEmail']" i18n>
+        Email is already taken.
+      </ng-container>
+    </mat-error>
+  </mat-form-field>
+</div>
+<mat-dialog-actions style="justify-content: space-between">
+  <button mat-button mat-dialog-close i18n>Cancel</button>
+  <button
+    mat-raised-button
+    cdkFocusInitial
+    color="primary"
+    style="color: white"
+    [mat-dialog-close]="emailFormControl.value"
+    [disabled]="!emailFormControl.valid"
+    i18n
+  >
+    Confirm
+  </button>
+</mat-dialog-actions>

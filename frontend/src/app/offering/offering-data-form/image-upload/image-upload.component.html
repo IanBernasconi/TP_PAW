@@ -1,0 +1,46 @@
+<div>
+  <mat-form-field>
+    <div>
+      <mat-toolbar>
+        <input matInput [value]="images.value" />
+        <mat-error>
+          <ng-container *ngIf="images?.errors?.['maxNumberOfImages']" i18n
+            >Max number of images is {{ maxNumberOfImages }}</ng-container
+          >
+        </mat-error>
+      </mat-toolbar>
+
+      <input
+        type="file"
+        id="fileInput"
+        name="fileInput"
+        accept="image/*"
+        multiple
+        (change)="selectFiles($event)"
+      />
+    </div>
+  </mat-form-field>
+
+  <div *ngIf="previews.length > 0" class="new-images-container">
+    <h3 i18n>New images</h3>
+    <!-- <img *ngFor="let preview of previews" [src]="preview" class="preview" /> -->
+    <mat-grid-list [cols]="2" rowHeight="3:2" gutterSize="20px">
+      <mat-grid-tile *ngFor="let image of previews">
+        <image-card [imageWithStatus]="image" />
+      </mat-grid-tile>
+    </mat-grid-list>
+  </div>
+
+  <div *ngIf="currentImages && currentImages!.length > 0">
+    <h3 i18n>Current images</h3>
+    <mat-grid-list [cols]="2" rowHeight="3:2" gutterSize="20px">
+      <mat-grid-tile *ngFor="let image of currentImages">
+        <image-card
+          [imageWithStatus]="image"
+          (addImage)="addImage.emit($event)"
+          (deleteImage)="deleteImage.emit($event)"
+        />
+      </mat-grid-tile>
+    </mat-grid-list>
+  </div>
+</div>

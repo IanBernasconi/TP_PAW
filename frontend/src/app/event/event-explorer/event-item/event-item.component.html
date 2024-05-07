@@ -1,0 +1,46 @@
+<div *ngIf="!isLoading; else loadingSkeleton" class="event-card card">
+  <div class="card-body">
+    <div class="event-attributes-container">
+      <h5 class="card-title event-title">{{ event?.name }}</h5>
+      <div class="event-attributes">
+        <i class="bi bi-calendar3"></i>
+        <p>{{ event?.date | date : "yyyy-MM-dd" }}</p>
+        <span>·</span>
+        <i class="bi bi-people"></i>
+        <p>{{ event?.numberOfGuests }}</p>
+      </div>
+    </div>
+    <ng-container *ngIf="!isLoadingOfferings; else loadingOfferingsSkeleton">
+      <div *ngIf="!offerings || !offerings || offerings.length === 0; else eventOfferings" class="no-images-container">
+      </div>
+      <ng-template #eventOfferings>
+        <div class="images-container">
+          <div *ngFor="let offering of sortedOfferings.slice(0, 4)" class="image-container">
+            <img *ngIf="offering.images.length > 0; else noImage" class="offering-image" [src]="offering.images[0]" />
+
+            <ng-template #noImage>
+              <img class="default-image offering-image"
+                [src]="'assets/images/category/' + offering.category + '-icon.svg'" />
+            </ng-template>
+          </div>
+          <mat-icon *ngIf="sortedOfferings.length > 4" class="material-icons">more_horiz</mat-icon>
+        </div>
+      </ng-template>
+    </ng-container>
+    <a class="stretched-link" (click)="clickedEventEvent.emit(event)"></a>
+  </div>
+</div>
+
+<ng-template #loadingSkeleton>
+  <div class="event-card card">
+    <div class="card-body">
+      <ngx-skeleton-loader count="1" appearance="line"></ngx-skeleton-loader>
+      <ng-container *ngTemplateOutlet="loadingOfferingsSkeleton"></ng-container>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #loadingOfferingsSkeleton>
+  <ngx-skeleton-loader [theme]=" { height: '64px' , width: '64px' , 'border-radius' : '10px' }" count="3"
+    appearance="circle"></ngx-skeleton-loader>
+</ng-template>

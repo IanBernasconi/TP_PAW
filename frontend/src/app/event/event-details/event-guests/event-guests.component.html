@@ -1,0 +1,53 @@
+<div *ngIf="guests && !errorMessage" class="content">
+  <div>
+    <div class="new-guest-btn-container">
+      <button *ngIf="active" class="btn btn-success" (click)="openAddGuestDialog()" i18n>
+        New Guest
+      </button>
+    </div>
+    <div class="one-column-container">
+      <div *ngIf="!guests.guests || guests.guests.length === 0; else guestList" class="empty-guests-container">
+        <h4 i18n>No Guests</h4>
+      </div>
+
+      <ng-template #guestList>
+        <div class="table-container">
+          <table class="table">
+            <thead class="table-primary">
+              <tr>
+                <th i18n>Email</th>
+                <th>
+                  <a *ngIf="hasUninvitedGuests() && active; else statusTitle" type="button"
+                    class="btn btn-primary btn-sm" (click)="inviteAllGuests()" i18n>Invite All</a>
+                  <ng-template #statusTitle>
+                    <p class="m-0" i18n>Status</p>
+                  </ng-template>
+                </th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody class="table-group">
+              <tr *ngFor="let guest of guests.guests">
+                <td>{{ guest.email }}</td>
+                <td>
+                  <div class="badge rounded-pill td-anchor {{ guest.status }}Style">
+                    {{ GuestStatus[guest.status] }}
+                  </div>
+                </td>
+                <td></td>
+                <td>
+                  <button *ngIf="guest.status === 'NEW' && active" type="button" class="btn btn-close btn-sm"
+                    (click)="openDeleteGuestDialog(guest)"></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+  <paginator *ngIf="guests && guests.guests.length > 0" [currentPage]="guests.links.getCurrentPage()"
+    [totalPages]="guests.links.getPagesQuantity()" (changeToNextPage)="changePage(guests.links.getNextLink() ?? '')"
+    (changeToPreviousPage)="changePage(guests.links.getPreviousLink() ?? '')"></paginator>
+</div>

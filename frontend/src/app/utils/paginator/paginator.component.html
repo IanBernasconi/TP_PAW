@@ -1,0 +1,9 @@
+<div class="pagination">
+  <button mat-button (click)="changeToPreviousPage.emit()" [disabled]="currentPage === 0" i18n>
+    &laquo; Previous
+  </button>
+  <span i18n>{{ currentPage + 1 }} of {{ totalPages + 1 }}</span>
+  <button mat-button (click)="changeToNextPage.emit()" [disabled]="currentPage === totalPages" i18n>
+    Next &raquo;
+  </button>
+</div>

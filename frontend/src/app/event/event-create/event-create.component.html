@@ -1,0 +1,6 @@
+<div class="page-content">
+  <go-back-button (goBack)="goBack()"></go-back-button>
+  <h1 i18n>Create your event</h1>
+
+  <event-data-form [loggedUser]="(loggedUser$ | async)!" (createdEvent)="createEvent($event)"></event-data-form>
+</div>

@@ -1,0 +1,36 @@
+.page-content {
+  margin-top: 15px;
+
+  .header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+
+    a {
+      height: fit-content;
+    }
+  }
+
+  mat-tab-group {
+    .offerings-container {
+      display: flex;
+      justify-content: space-between;
+      flex-direction: column;
+      margin-top: 20px;
+      height: 70vh;
+      width: 100%;
+    }
+
+    .no-offerings {
+      display: flex;
+      flex-direction: column;
+      gap: 50px;
+      justify-content: center;
+      align-items: center;
+      height: 40vh;
+      width: 100%;
+    }
+  }
+}

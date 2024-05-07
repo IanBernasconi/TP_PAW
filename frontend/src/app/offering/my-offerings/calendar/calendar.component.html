@@ -1,0 +1,138 @@
+<ng-template #cellTemplate let-day="day" let-highlightDay="highlightDay" let-unhighlightDay="unhighlightDay">
+  <div class="cal-cell-top">
+    <span class="cal-day-number">{{
+      day.date | calendarDate : "monthViewDayNumber" : locale
+      }}</span>
+  </div>
+  <div class="cell-totals">
+    <span *ngFor="let group of day.eventGroups" class="badge {{ group[0] }}Style"
+      (mouseenter)="highlightDay.emit({ event: group[1][0] })"
+      (mouseleave)="unhighlightDay.emit({ event: group[1][0] })">
+      {{ group[1].length }}
+    </span>
+  </div>
+</ng-template>
+
+<ng-template #titleTemplate let-event="event">
+  <div class="calendar-events-open">
+    <span class="title">{{ event.title }}</span>
+    <span class="info-badge">
+      <i class="bi bi-geo-alt-fill"></i>
+      <span> {{ getDistrict(event) | async }} </span>
+    </span>
+    <span class="info-badge">
+      <i class="bi bi-people-fill"></i>
+      <span> {{ event.meta.numberOfGuests }}</span>
+    </span>
+    <button class="btn btn-light btn-sm rounded-pill"
+      (click)="handleEvent('click', event, true); $event.stopPropagation()" i18n>
+      Go to chat
+    </button>
+  </div>
+</ng-template>
+
+<div class="calendar-container">
+  <div class="row text-center">
+    <div class="col-md-4">
+      <div class="btn-group">
+        <button class="btn btn-secondary" mwlCalendarPreviousView [view]="view" [(viewDate)]="viewDate"
+          (viewDateChange)="closeOpenMonthViewDay()" i18n>
+          Previous
+        </button>
+        <button class="btn btn-outline-secondary" mwlCalendarToday [(viewDate)]="viewDate"
+          (viewDateChange)="closeOpenMonthViewDay()" i18n>
+          Today
+        </button>
+        <button class="btn btn-secondary" mwlCalendarNextView [view]="view" [(viewDate)]="viewDate"
+          (viewDateChange)="closeOpenMonthViewDay()" i18n>
+          Next
+        </button>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <h3>{{ viewDate | calendarDate : view + "ViewTitle" : locale }}</h3>
+    </div>
+  </div>
+  <br />
+  <mwl-calendar-month-view [viewDate]="viewDate" [events]="calendarEvents" [activeDayIsOpen]="activeDayIsOpen"
+    [cellTemplate]="cellTemplate" (dayClicked)="dayClicked($event.day)"
+    (eventClicked)="handleEvent('Clicked', $event.event)" (beforeViewRender)="beforeMonthViewRender($event)"
+    [eventTitleTemplate]="titleTemplate">
+  </mwl-calendar-month-view>
+</div>
+
+<ng-template #modalContent let-close="close">
+  <div class="modal-header">
+    <div *ngIf="selectedRelation" class="offering-details">
+      <h5 class="offering-name" *ngIf="offering$ | async as offering">
+        {{ offering.name }}
+      </h5>
+      <span>-</span>
+      <span class="badge rounded-pill {{ selectedRelation.status }}Style">
+        {{ OfferingStatus[selectedRelation.status] }}
+      </span>
+    </div>
+    <button class="btn btn-light close" (click)="close()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div *ngIf="selectedRelation && (calendarData$ | async)?.events as events" class="modal-body">
+    <div class="future-event-header">
+      <h3 class="name">
+        {{ events.eventsByURI.get(selectedRelation.event)?.name }}
+      </h3>
+      <div class="event-tags">
+        <span class="info-badge">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" height="24" fill="none"
+            class="svg-icon">
+            <g stroke-width="2" stroke-linecap="round" stroke="#fff">
+              <rect y="5" x="4" width="16" rx="2" height="16"></rect>
+              <path d="m8 3v4"></path>
+              <path d="m16 3v4"></path>
+              <path d="m4 11h16"></path>
+            </g>
+          </svg>
+          <span>{{
+            events.eventsByURI.get(selectedRelation.event)?.date | date
+            }}</span>
+        </span>
+        <span class="info-badge">
+          <i class="bi bi-people-fill"></i>
+          <span>
+            {{
+            events.eventsByURI.get(selectedRelation.event)?.numberOfGuests
+            }}</span>
+        </span>
+        <span class="info-badge">
+          <i class="bi bi-geo-alt-fill"></i>
+          <span *ngIf="events.eventsByURI.get(selectedRelation.event)">
+            {{
+            getDistrictValue(
+            events.eventsByURI.get(selectedRelation.event)!.district
+            ) | async
+            }}
+          </span>
+        </span>
+      </div>
+    </div>
+    <div class="future-event-body">
+      <div *ngIf="
+          events.eventsByURI.get(selectedRelation.event)?.description &&
+          (events.eventsByURI.get(selectedRelation.event)?.description)!
+            .length > 0
+        " class="event-description">
+        <div class="description-title">Event description</div>
+        <div class="description-content-container">
+          <span class="description-content">
+            {{ events.eventsByURI.get(selectedRelation.event)?.description }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-outline-secondary rounded-pill" (click)="goToChat()" i18n>
+      Go to chat
+    </button>
+  </div>
+</ng-template>

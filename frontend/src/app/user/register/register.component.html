@@ -1,0 +1,107 @@
+<form *ngIf="!registerComplete; else registerCompletePage" [formGroup]="registerForm" (submit)="register()">
+  <div class="page-container">
+    <div class="register-page-content">
+      <h2 i18n>Register</h2>
+      <div class="field-container">
+        <mat-form-field>
+          <mat-label i18n>Email</mat-label>
+          <input matInput placeholder="Email" i18n-placeholder formControlName="email" required />
+          <mat-error>
+            <ng-container *ngIf="email?.errors?.['required']" i18n>Email is required.</ng-container>
+            <ng-container *ngIf="email?.errors?.['email']" i18n>
+              Please enter a valid email address.
+            </ng-container>
+            <ng-container *ngIf="email?.errors?.['uniqueEmail']" i18n>
+              Email is already taken.
+            </ng-container>
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div class="field-container">
+        <mat-form-field>
+          <mat-label i18n>Name</mat-label>
+          <input matInput placeholder="Name" i18n-placeholder formControlName="name" required />
+          <mat-error>
+            <ng-container *ngIf="name?.errors?.['required']" i18n>Name is required.</ng-container>
+            <ng-container *ngIf="name?.errors?.['minlength']" i18n>
+              Name must be at least
+              {{ name?.errors?.['minlength'].requiredLength }} characters long.
+            </ng-container>
+            <ng-container *ngIf="name?.errors?.['maxlength']" i18n>
+              Name must be less than
+              {{ name?.errors?.['maxlength'].requiredLength }} characters long.
+            </ng-container>
+            <ng-container *ngIf="name?.errors?.['pattern']" i18n>
+              Name must contain only letters and numbers.
+            </ng-container>
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div class="field-container">
+        <mat-form-field>
+          <mat-label i18n>Password</mat-label>
+          <input matInput [type]="hidePassword ? 'password' : 'text'" i18n-placeholder placeholder="Password"
+            formControlName="password" required />
+          <button tabindex="-1" type="button" mat-icon-button matSuffix (click)="hidePassword = !hidePassword"
+            class="visibility-btn">
+            <mat-icon>{{
+              hidePassword ? "visibility_off" : "visibility"
+              }}</mat-icon>
+          </button>
+          <mat-error>
+            <ng-container *ngIf="password?.errors?.['required']" i18n>Password is required.</ng-container>
+            <ng-container *ngIf="password?.errors?.['minlength']" i18n>
+              Password must be at least
+              {{ password?.errors?.['minlength'].requiredLength }} characters
+              long.
+            </ng-container>
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div class="field-container">
+        <mat-form-field>
+          <mat-label i18n>Confirm Password</mat-label>
+          <input matInput [type]="hideConfirmPassword ? 'password' : 'text'" i18n-placeholder
+            placeholder="Confirm Password" formControlName="confirmPassword" required />
+          <button tabindex="-1" type="button" mat-icon-button matSuffix
+            (click)="hideConfirmPassword = !hideConfirmPassword" class="visibility-btn">
+            <mat-icon>{{
+              hideConfirmPassword ? "visibility_off" : "visibility"
+              }}</mat-icon>
+          </button>
+          <mat-error>
+            <ng-container *ngIf="confirmPassword?.errors?.['passwordMismatch']" i18n>
+              Passwords do not match.
+            </ng-container>
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div class="checkbox-container">
+        <input type="checkbox" formControlName="provider" />
+        <span i18n>Are you a service provider?</span>
+      </div>
+      <div class="register-btn-container">
+        <button class="btn btn-dark btn-lg" type="submit" [disabled]="!registerForm.valid" i18n>
+          Register
+        </button>
+      </div>
+    </div>
+  </div>
+</form>
+
+<ng-template #registerCompletePage>
+  <div class="d-flex justify-content-center mt-2 page-container">
+    <div class="congratulations-page-content">
+      <h1 i18n>Congratulations!</h1>
+      <p class="registration-successful-text" i18n>
+        Your registration was successful
+      </p>
+      <p class="check-email-text" i18n>
+        Please check your email to verify your account
+      </p>
+      <a class="btn btn-primary" routerLink="/user/login" i18n>
+        Go to login page
+      </a>
+    </div>
+  </div>
+</ng-template>

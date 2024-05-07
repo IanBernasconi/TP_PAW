@@ -1,0 +1,42 @@
+<div *ngIf="loggedUser$ | async as loggedUser" class="page-content">
+  <div class="header">
+    <h1 i18n>My services</h1>
+    <ng-container *ngIf="(offerings$ | async) as offerings">
+      <a *ngIf="offerings.offerings && offerings.offerings.length > 0" routerLink="/my-services/create"
+        class="btn btn-dark rounded-pill btn-lg" type="button" i18n>
+        Create service
+      </a>
+    </ng-container>
+
+  </div>
+  <mat-tab-group #tabGroup [selectedIndex]="activeTab" (selectedTabChange)="onTabChanged($event)">
+    <mat-tab label="Services" i18n-label *ngIf="(offerings$ | async) as offerings">
+      <div class="offerings-container" *ngIf="offerings.offerings && offerings.offerings.length > 0; else noOfferings">
+        <offering-list class="tab-content" [offerings]="offerings" [isLoading]="(isLoading$ | async) ?? false"
+          (clickedOfferingEvent)="navigateToOffering($event)"
+          (changePageEvent)="fetchOfferings($event)"></offering-list>
+      </div>
+    </mat-tab>
+    <mat-tab label="Conversations" i18n-label *ngIf="offerings$ | async as offerings">
+      <chat-list-component *ngIf="offerings.offerings.length > 0; else noOfferings" [loggedUser]="loggedUser"
+        [isLoading]="!!(isLoading$ | async)" [offerings$]="offerings$" [selected]="selectedChatTab"
+        [conversationData]="(conversationData$ | async) ?? undefined"
+        (changeToNextPage)="fetchOfferings(offerings.links.getNextLink() ?? '')" (changeToPreviousPage)="
+          fetchOfferings(offerings.links.getPreviousLink() ?? '')
+        "></chat-list-component>
+    </mat-tab>
+    <mat-tab label="Calendar" i18n-label>
+      <calendar *ngIf="loggedUser" [loggedUser]="loggedUser" (onRelationSelected)="calendarRelationSelected($event)">
+      </calendar>
+    </mat-tab>
+  </mat-tab-group>
+</div>
+
+<ng-template #noOfferings>
+  <div class="no-offerings">
+    <h2 i18n>You don't have any services yet</h2>
+    <a routerLink="/my-services/create" class="btn btn-dark rounded-pill btn-lg" type="button" i18n>
+      Create service
+    </a>
+  </div>
+</ng-template>

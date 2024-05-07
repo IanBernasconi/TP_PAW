@@ -1,0 +1,108 @@
+.messages-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+    height: 100%;
+    width: 100%;
+
+    .messages-area {
+        display: flex;
+        flex-direction: column;
+
+        gap: 10px;
+        padding: 10px;
+        overflow-y: auto;
+        height: 100%;
+
+        mat-spinner {
+            margin: auto auto;
+        }
+
+        .date-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+
+            .date {
+                font-size: 0.75rem;
+                background: white;
+                padding: 5px 10px;
+                border-radius: 0.375rem;
+                box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+                color: #717171;
+            }
+        }
+
+        .message-container {
+            position: relative;
+            display: flex;
+            flex-direction: row;
+            gap: 0;
+            align-items: flex-start;
+            width: fit-content;
+            max-width: 80%;
+            padding: 5px 0 10px 10px;
+            background: #ffffff;
+            border-radius: 0.375rem;
+            box-shadow: 1px 2px 1px rgba(0, 0, 0, 0.2);
+
+            &.sender {
+                align-self: flex-end;
+                background: #b2ebff;
+            }
+
+            .text {
+                margin: 0;
+                word-break: break-word;
+            }
+
+            .time-placeholder {
+                visibility: hidden;
+            }
+
+            .time-container {
+                position: absolute;
+                display: flex;
+                flex-direction: column;
+                gap: 5px;
+                align-items: flex-end;
+                margin-left: 5px;
+                bottom: 2px;
+                right: 5px;
+
+                .message-time {
+                    font-size: 0.75rem;
+                    color: #717171;
+                }
+            }
+        }
+    }
+
+    .write-area {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        justify-content: space-evenly;
+        align-items: center;
+        padding: 10px;
+        width: 100%;
+
+
+        .send-message-container {
+            position: relative;
+            width: 100%;
+
+
+            .btn-send-message {
+                position: absolute;
+                right: 0;
+                top: 0;
+                border: none;
+            }
+        }
+    }
+
+
+}

@@ -1,0 +1,49 @@
+.tags-container {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.date,
+.district {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /*padding: 9px 12px;*/
+  gap: 8px;
+  height: 30px;
+  width: 180px;
+  border: none;
+  background: rgba(109, 161, 255, 0.92);
+  border-radius: 20px;
+}
+
+.date-color:hover {
+  background: rgba(55, 169, 37, 0.92);
+}
+
+.number-of-guests {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  height: 30px;
+  width: 120px;
+  border: none;
+  background: rgba(109, 161, 255, 0.92);
+  border-radius: 20px;
+}
+
+.number-of-guests-icon,
+.district-icon {
+  color: #ffffff;
+}
+
+.date-label,
+.number-of-guests-label,
+.district-label {
+  line-height: 22px;
+  font-size: 17px;
+  color: #fff;
+}

@@ -1,0 +1,6 @@
+<div class="error-container">
+    <h1 class="code" *ngIf="errorCode > 0 && errorMessages[errorCode]">{{errorCode}}</h1>
+    <h2 class="title">{{errorMessages[errorCode] ? errorMessages[errorCode] : errorMessages[0]}}</h2>
+    <h3 class="action-message">{{errorDescription}}</h3>
+    <button class="btn btn-primary" (click)="onActionClick()">{{actionMessage}}</button>
+</div>

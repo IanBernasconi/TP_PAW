@@ -1,0 +1,54 @@
+<ng-container *ngTemplateOutlet="navbar; context: { $implicit: user$ | async }"></ng-container>
+
+<ng-template #navbar let-user>
+  <nav>
+    <div>
+      <ul>
+        <li>
+          <a class="navbar-brand site-name" routerLink="/services" routerLinkActive="active"><img class="nav-logo"
+              [src]="logoSrc" /></a>
+        </li>
+        <li>
+          <a routerLink="/services" routerLinkActive="active" i18n>Explore</a>
+        </li>
+        <li>
+          <a *ngIf="user" routerLink="/events" routerLinkActive="active" i18n>My events</a>
+        </li>
+        <li>
+          <a *ngIf="user && user!.provider" routerLink="/my-services" routerLinkActive="active" i18n>My services</a>
+        </li>
+      </ul>
+    </div>
+    <div>
+      <ul>
+        <li *ngIf="user" class="profile-info">
+          <div class="dropdown">
+            <a class="nav-link dropdown-toggle profile-container" href="#" id="navbarDropdown" role="button"
+              data-bs-toggle="dropdown" aria-expanded="false">
+              <img *ngIf="user.profilePicture; else defaultIconTemplate" [src]="user.profilePicture" />
+              <ng-template #defaultIconTemplate>
+                <i class="bi bi-person-circle profile-picture-default"></i>
+              </ng-template>
+              <span class="profile-name">{{ user.name }}</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" routerLink="/user/profile" routerLinkActive="active" i18n>
+                Profile
+              </a>
+              <a class="dropdown-item" (click)="logout()" routerLinkActive="active" i18n>
+                Logout
+              </a>
+            </ul>
+          </div>
+        </li>
+        <li>
+          <a *ngIf="!user" routerLink="/user/login" routerLinkActive="active" i18n>Login</a>
+        </li>
+        <li>
+          <a *ngIf="!user" routerLink="/user/register" routerLinkActive="active" i18n>Register</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <hr *ngIf="!isLandingPage">
+</ng-template>

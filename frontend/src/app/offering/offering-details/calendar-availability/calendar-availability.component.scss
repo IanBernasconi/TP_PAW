@@ -1,0 +1,17 @@
+.cell-disabled {
+    cursor: none !important;
+    pointer-events: none !important;
+    background-color: #ededed;
+    opacity: 0.4;
+    height: 100%;
+}
+
+.title-container {
+    display: flex;
+    justify-content: space-between;
+
+    .title-date {
+        display: flex;
+        justify-content: flex-end;
+    }
+}

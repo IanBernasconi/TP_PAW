@@ -1,0 +1,38 @@
+<div *ngIf="event && filteredRelations && filteredRelations.length > 0; else noRelations" class="chat-container">
+    <div class="chat-drawer-container">
+        <div *ngFor="let relation of filteredRelations">
+            <chat-selector-card *ngIf="relation.lastMessage && relation.offering" [name]="relation.offering.name"
+                [lastMessage]="relation.lastMessage" [unreadMessages]="relation.relation.organizerUnreadMessagesCount"
+                (click)="selectRelation(relation)">
+                <div class="date-and-status-container">
+                    <img class="offering-category-image"
+                        src="assets/images/category/{{relation.offering.category}}-icon.svg"
+                        alt="${relation.offering.offeringCategory.name}" height="18px" />
+                    <span class="badge rounded-pill {{relation.relation.status}}Style">
+                        {{OfferingStatus[relation.relation.status]}}
+                    </span>
+                </div>
+            </chat-selector-card>
+        </div>
+    </div>
+
+    <messages-container class="messages-container" *ngIf="currentRelation; else noConversationSelected"
+        (markAsRead)="markConversationAsRead.emit($event)" [currentUser]="loggedUser"
+        [offering]="currentRelation.offering" [relation]="currentRelation.relation"
+        (onMessageSent)="updateLastMessage.emit($event)"></messages-container>
+    <mat-divider [vertical]="true"></mat-divider>
+    <ng-template #noConversationSelected>
+        <div class="no-conversation-container">
+            <span>Select a service to start chatting</span>
+        </div>
+    </ng-template>
+
+</div>
+
+<ng-template #noRelations>
+    <div class="no-relations-container">
+        <h3 class="text" i18n>This event has no conversations</h3>
+        <button *ngIf="active" class="btn btn-outline-dark" [routerLink]="['.']" [queryParams]="{ tab: 'details' }"
+            i18n>Add a service</button>
+    </div>
+</ng-template>

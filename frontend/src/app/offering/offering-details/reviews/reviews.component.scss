@@ -1,0 +1,21 @@
+.review-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    .first-line {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+
+        ngb-rating {
+            color: #FFC107;
+            font-size: 2rem;
+        }
+    }
+
+    .review-content {
+        padding-inline-start: 5px;
+    }
+}

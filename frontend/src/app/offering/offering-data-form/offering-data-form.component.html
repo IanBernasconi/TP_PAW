@@ -1,0 +1,101 @@
+<form [formGroup]="createForm" class="create-form" (ngSubmit)="onSubmit()" autocomplete="off">
+  <mat-form-field>
+    <mat-label i18n>Name</mat-label>
+    <input matInput class="form-control" formControlName="name" required />
+    <mat-error>
+      <ng-container *ngIf="name?.errors?.['required']" i18n>Name is required.</ng-container>
+      <ng-container *ngIf="name?.errors?.['minlength']" i18n>
+        Name must be at least {{ name?.errors?.['minlength'].requiredLength }} characters long.
+      </ng-container>
+      <ng-container *ngIf="name?.errors?.['maxlength']" i18n>
+        Name must be less than {{ name?.errors?.['maxlength'].requiredLength }} characters long.
+      </ng-container>
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label i18n>Category</mat-label>
+    <mat-select formControlName="category" required>
+      <mat-option *ngFor="let category of (filteredCategories | async)" [value]="category.name">
+        {{ category.value }}
+      </mat-option>
+    </mat-select>
+    <mat-error i18n>
+      <ng-container *ngIf="category?.errors?.['required']">Category is required.</ng-container>
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field>
+    <input matInput hidden value="0" [formControl]="priceInputMock" />
+    <mat-label i18n>Price</mat-label>
+    <div class="price-range-container">
+      <input type="number" class="form-control numeric-input" formControlName="minPrice" [value]="minPrice?.value" />
+      <span>-</span>
+      <input type="number" class="form-control numeric-input" formControlName="maxPrice" [value]="maxPrice?.value" />
+      <mat-select formControlName="priceType" required>
+        <mat-option *ngFor="let priceType of (priceTypes$ | async )" [value]="priceType.name">
+          {{ priceType.value }}
+        </mat-option>
+      </mat-select>
+    </div>
+    <mat-error>
+      <ng-container *ngIf="createForm.errors?.['overlap']" i18n>Max price must be greater than min price.</ng-container>
+      <ng-container *ngIf="minPrice?.errors?.['required']" i18n>This field is required.</ng-container>
+      <ng-container *ngIf="maxPrice?.errors?.['required']" i18n>This field is required.</ng-container>
+      <ng-container *ngIf="minPrice?.errors?.['min']" i18n>Price must be greater than {{ minPrice?.errors?.['min'].min
+        -1
+        }}.</ng-container>
+      <ng-container *ngIf="maxPrice?.errors?.['min']" i18n>Price must be greater than {{ maxPrice?.errors?.['min'].min
+        -1
+        }}.</ng-container>
+      <ng-container *ngIf="minPrice?.errors?.['max']" i18n>Price must be lower than {{ minPrice?.errors?.['max'].max
+        }}.</ng-container>
+      <ng-container *ngIf="maxPrice?.errors?.['max']" i18n>Price must be lower than {{ maxPrice?.errors?.['max'].max
+        }}.</ng-container>
+    </mat-error>
+  </mat-form-field>
+  <div class="horizontal-container">
+    <mat-checkbox formControlName="unlimitedGuests" i18n>
+      No guest limit
+    </mat-checkbox>
+    <mat-form-field *ngIf="!unlimitedGuests?.value">
+      <mat-label i18n>Guest capacity</mat-label>
+      <input matInput type="number" formControlName="maxGuests" [value]="maxGuests?.value" />
+      <mat-error>
+        <ng-container *ngIf="maxGuests?.errors?.['required']" i18n>This field is required.</ng-container>
+        <ng-container *ngIf="maxGuests?.errors?.['min']" i18n>Min guests must be greater than {{
+          maxGuests?.errors?.['min'].min -1 }}.</ng-container>
+        <ng-container *ngIf="maxGuests?.errors?.['max']" i18n>Max guests be lower than {{ maxGuests?.errors?.['max'].max
+          }}.</ng-container>
+      </mat-error>
+    </mat-form-field>
+  </div>
+
+  <mat-form-field>
+    <mat-label i18n>District</mat-label>
+    <mat-select formControlName="district" required>
+      <mat-option *ngFor="let district of districts$ | async" [value]="district.name">
+        {{ district.value }}
+      </mat-option>
+    </mat-select>
+    <mat-error i18n>
+      <ng-container *ngIf="district?.errors?.['required']">District is required.</ng-container>
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label i18n>Description</mat-label>
+    <textarea matInput formControlName="description"></textarea>
+  </mat-form-field>
+
+  <span i18n>Here you can upload some images to showcase your service</span>
+  <image-upload [currentImages]="imagesWithStatus" [selectedFiles]="selectedFiles"
+    (selectedFilesChanged)="handleSelectedFilesChanged($event)" (addImage)="handleAddImage($event)"
+    (deleteImage)="handleDeleteImage($event)" />
+  <div class="submit-container">
+    <button mat-raised-button color="primary" type="submit" [disabled]="createForm.invalid"
+      style="color: white; font-weight: 550;" i18n>
+      Submit
+    </button>
+  </div>
+</form>

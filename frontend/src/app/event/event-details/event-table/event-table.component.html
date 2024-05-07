@@ -1,0 +1,176 @@
+<table *ngIf="flatRelationsUri.length > 0 || active; else noRelations" class="table">
+  <thead class="table-primary">
+    <tr>
+      <th class="first-th" scope="col" i18n>Category</th>
+      <th scope="col" i18n>Service</th>
+      <th scope="col" i18n>Provider</th>
+      <th scope="col" i18n>Price</th>
+      <th scope="col" i18n>Rating</th>
+
+      <ng-container *ngIf="active; else reviewColumn">
+        <th scope="col" i18n>Contact</th>
+      </ng-container>
+      <ng-template #reviewColumn>
+        <th scope="col" i18n>Review</th>
+      </ng-template>
+
+      <th scope="col" i18n>Status</th>
+
+      <ng-container *ngIf="active">
+        <th scope="col" class="last-th"></th>
+      </ng-container>
+    </tr>
+  </thead>
+  <tbody class="table-group">
+    <ng-container *ngFor="let category of relationsByOfferingCategoryKeys">
+      <ng-container *ngIf="
+          !relationsByOfferingCategory.get(category) ||
+            (relationsByOfferingCategory.get(category)!.length == 0 &&
+              (getCategoryValue(category) | async)) as categoryName;
+          else hasRelations
+        ">
+        <tr *ngIf="active">
+          <th>
+            <div class="td-anchor">{{ categoryName }}</div>
+          </th>
+          <td colspan="7">
+            <div class="td-anchor">
+              <button class="btn btn-outline-dark" (click)="goToExploreCategory(category)" i18n>
+                Explore
+              </button>
+            </div>
+          </td>
+        </tr>
+      </ng-container>
+      <ng-template #hasRelations>
+        <tr *ngFor="
+            let relationInfo of getRelationsByCategory(category);
+            let ii = index
+          ">
+          <ng-container *ngIf="
+              ii == 0 && (getCategoryValue(category) | async) as categoryName
+            ">
+            <th *ngIf="active" [attr.rowspan]="
+                relationsByOfferingCategory.get(category)!.length + 1
+              ">
+              <div class="td-anchor">{{ categoryName }}</div>
+            </th>
+            <th *ngIf="!active" [attr.rowspan]="relationsByOfferingCategory.get(category)!.length">
+              <div class="td-anchor">{{ categoryName }}</div>
+            </th>
+          </ng-container>
+          <td>
+            <div class="offering-name-container">
+              <span>{{ relationInfo.offering.name }}</span>
+              <a (click)="goToService.emit(relationInfo.offering)" class="btn btn-primary btn-sm" i18n>Go To Service</a>
+            </div>
+          </td>
+          <td>
+            <div class="td-anchor">{{ relationInfo.provider.name }}</div>
+          </td>
+          <td>
+            <div class="td-anchor">
+              ${{ relationInfo.offering.minPrice }}
+              {{
+              relationInfo.offering.minPrice !==
+              relationInfo.offering.maxPrice
+              ? "- $" + relationInfo.offering.maxPrice
+              : ""
+              }}
+            </div>
+          </td>
+          <td>
+            <div class="td-anchor">
+              <span *ngIf="relationInfo.offering.rating > 0; else noRating"><i class="bi bi-star-fill"
+                  style="color: #448fff"></i>
+                {{ relationInfo.offering.rating | number : "1.2-2" }}</span>
+              <ng-template #noRating>
+                <span><i class="bi bi-star-fill" style="color: #448fff"></i>
+                  --</span>
+              </ng-template>
+            </div>
+          </td>
+          <td>
+            <ng-container *ngIf="active && (loggedUser$ | async) as loggedUser">
+              <div
+                *ngIf="relationInfo.provider?.email !== loggedUser.email && relationInfo.relation.status === 'NEW' && !relationInfo.offering.deleted">
+                <button type="button" class="btn btn-primary btn-sm" (click)="openContactProviderDialog(relationInfo)"
+                  i18n>
+                  Contact Provider
+                </button>
+              </div>
+              <div class="td-anchor" *ngIf="relationInfo.provider?.email === loggedUser.email">
+                <p class="m-0" i18n>Own Service</p>
+              </div>
+              <div class="td-anchor" *ngIf="relationInfo.relation.status !== 'NEW'">
+                <p class="m-0" i18n>Already Contacted</p>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="!active">
+              <button *ngIf="
+                  !relationInfo.alreadyReviewed &&
+                  relationInfo.relation.status !== 'NEW'
+                " type="button" class="btn btn-primary btn-sm" (click)="openReviewDialog(relationInfo)" i18n>
+                Review
+              </button>
+              <div *ngIf="relationInfo.alreadyReviewed" class="td-anchor">
+                <p class="m-0" i18n>Already Reviewed</p>
+              </div>
+            </ng-container>
+          </td>
+          <td>
+            <div class="row-data-container">
+              <span *ngIf="relationInfo.offering.deleted; else relationStatus" class="badge text-bg-warning" i18n>
+                Deleted
+              </span>
+              <ng-template #relationStatus>
+                <div class="badge rounded-pill {{relationInfo.relation.status}}Style">
+                  {{ OfferingStatus[relationInfo.relation.status] }}
+                </div>
+              </ng-template>
+            </div>
+          </td>
+          <td *ngIf="active">
+            <button type="button" class="btn btn-close btn-sm"
+              (click)="openDeleteRelationDialog(relationInfo)"></button>
+          </td>
+        </tr>
+        <tr *ngIf="active">
+          <td colspan="7">
+            <button class="btn btn-outline-dark" (click)="goToExplore.emit(category)" i18n>
+              Explore
+            </button>
+          </td>
+        </tr>
+      </ng-template>
+    </ng-container>
+    <tr *ngIf="active && notIncludedCategories.length > 0" class="another-category-container">
+      <td colspan="1" *ngIf="otherCategory.enabled">
+        <mat-form-field>
+          <mat-select [formControl]="otherCategory">
+            <mat-option *ngFor="let category of notIncludedCategories" [value]="category.name">
+              {{ category.value }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </td>
+      <td colspan="8">
+        <button *ngIf="!otherCategory.enabled" class="btn btn-outline-dark" id="showSelectBtn"
+          (click)="enableOtherCategory()" i18n>
+          Add service
+        </button>
+        <button *ngIf="otherCategory.enabled" class="btn btn-dark" (click)="
+            otherCategory.value && goToExploreCategory(otherCategory.value)
+          " i18n>
+          Explore
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<ng-template #noRelations>
+  <div class="no-relations-container">
+    <h3 class="text" i18n>This event had no services</h3>
+  </div>
+</ng-template>

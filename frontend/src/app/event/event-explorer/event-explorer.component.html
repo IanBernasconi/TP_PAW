@@ -1,0 +1,18 @@
+<div class="content">
+  <div class="header">
+    <h1>Event Explorer</h1>
+    <ng-container *ngIf="events$ | async as events">
+      <a *ngIf="events.length > 0" class="btn btn-dark rounded-pill btn-lg" type="button" routerLink="/events/create"
+        i18n>
+        Create Event
+      </a>
+    </ng-container>
+  </div>
+  <mat-tab-group #tabGroup (selectedTabChange)="onTabChange($event)">
+    <mat-tab label="Active" i18n-label></mat-tab>
+    <mat-tab label="Finished" i18n-label></mat-tab>
+  </mat-tab-group>
+  <events-list *ngIf="events$ | async as events" [isLoading]="!!(isLoading$ | async) && !(loggedUser$ | async)"
+    [links]="links$ | async" [isLoadingOfferings]="!!(isLoadingOfferings$ | async)" [events]="events"
+    (clickedEventEvent)="navigateToEvent($event)" (changePageEvent)="changePage($event)"></events-list>
+</div>

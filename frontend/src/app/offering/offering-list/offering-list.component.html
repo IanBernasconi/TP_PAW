@@ -1,0 +1,27 @@
+<div *ngIf="!isLoading; else loadingSkeleton" class="content">
+    <div style="display: flex; justify-content: start; align-items: start;" *ngIf="offerings?.offerings?.length === 0">
+        <p style="font-size: 18px;" i18n>No offerings were found with your requirements</p>
+    </div>
+    <mat-grid-list *ngIf="offerings && offerings.offerings as offeringsList" [cols]="cols" rowHeight="3:4"
+        gutterSize="20px">
+        <mat-grid-tile *ngFor="let offering of offeringsList | slice:0:((maxRows ?? offeringsList.length/cols)*cols)"
+            (click)="navigateToOffering(offering)">
+            <offering-card style="width: 100%" [offering]="offering" [isLoadingLike]="isLoadingLikes"
+                [owner]="offerings.ownersByUri?.get(offering.owner)" [isLiked]="likes?.get(offering.self) ?? false"
+                [showLikeButton]="loggedUser != undefined && loggedUser.self != offering.owner"
+                (likeOffering)="likeOffering.emit($event)" (deleteLike)="deleteLike.emit($event)"></offering-card>
+        </mat-grid-tile>
+    </mat-grid-list>
+    <paginator *ngIf="offerings && offerings.offerings.length > 0 && !hidePagination"
+        [currentPage]="offerings.links.getCurrentPage()" [totalPages]="offerings.links.getPagesQuantity()"
+        (changeToNextPage)="changePageEvent.emit(offerings.links.getNextLink() ?? '')"
+        (changeToPreviousPage)="changePageEvent.emit(offerings.links.getPreviousLink() ?? '')"></paginator>
+</div>
+
+<ng-template #loadingSkeleton>
+    <mat-grid-list [cols]="cols" rowHeight="350px" gutterSize="20px">
+        <mat-grid-tile *ngFor="let offering of mockOfferings">
+            <offering-card style="width: 100%" [isLoading]="isLoading"></offering-card>
+        </mat-grid-tile>
+    </mat-grid-list>
+</ng-template>

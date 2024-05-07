@@ -1,0 +1,6 @@
+<navbar [ngClass]="{ 'sticky-top': !isLandingPage, 'fill-nav': !isLandingPage }" [isLandingPage]="isLandingPage">
+</navbar>
+<div class="page-content">
+  <router-outlet></router-outlet>
+  <app-toasts aria-live="polite" aria-atomic="true"></app-toasts>
+</div>

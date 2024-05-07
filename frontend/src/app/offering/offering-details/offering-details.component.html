@@ -1,0 +1,108 @@
+<ng-template #pageContent>
+    <ng-container *ngIf="!(isLoading$ | async); else loadingSkeleton">
+        <div *ngIf="(selectedOffering$ | async) as offeringData" class="page-content">
+            <ng-container *ngIf="offeringData.offering as offering">
+                <div>
+                    <go-back-button (goBack)="goBack()"></go-back-button>
+                    <offering-header [offering]="offering" [loggedUser]="(loggedUser$ | async) ?? undefined"
+                        (deleteOfferingEvent)="openDeleteOfferingDialog()" (editOfferingEvent)="editOffering()"
+                        [isLiked]="offeringData.isLiked" (likeOffering)="likeOffering($event)"
+                        (deleteLike)="deleteLike($event)"></offering-header>
+                    <offering-details-images [images]="offering.images"></offering-details-images>
+                </div>
+                <div class="more-container">
+                    <div class="details-container">
+                        <div *ngIf="offering.description.length > 0" class="description-container">
+                            <mat-divider />
+                            <div class="description-title-container">
+                                <p i18n>Description</p>
+                            </div>
+                            <div class="description-content">
+                                <p *ngIf="offering.description.length > 0" class="description" i18n>
+                                    {{ offering.description }}
+                                </p>
+                            </div>
+                        </div>
+                        <mat-divider />
+                        <div *ngIf="!offering.deleted && offeringData.owner && (userEvents$ | async) as userEvents"
+                            class="provider-availability-container">
+                            <div class="title-container">
+                                <p i18n>Provider availability</p>
+                            </div>
+                            <div class="calendar-container">
+                                <calendar-availability [eventDates]="offeringData.eventDates ?? []"
+                                    [userEvents]="userEvents" (fetchDates)="fetchDates($event)"
+                                    (goToEvent)="navigateToEvent($event)" />
+                            </div>
+                        </div>
+                        <mat-divider *ngIf="!offering.deleted && offeringData.eventDates" />
+                        <div class="reviews">
+                            <h4 class="title" i18n>Reviews</h4>
+                            <reviews *ngIf="offeringData.reviews" [reviews]="offeringData.reviews"
+                                (pageChange)="changeReviewPage($event)"></reviews>
+                        </div>
+                        <ng-container *ngIf="offeringData.recommendations && offeringData.recommendations.length > 0">
+                            <mat-divider />
+                            <div class="recommendations">
+                                <h4 class="title" i18n>You might be interested in</h4>
+                                <mat-grid-list [cols]="3" rowHeight="3:4" gutterSize="20px">
+                                    <mat-grid-tile *ngFor="let recommended of  offeringData.recommendations"
+                                        (click)="navigateToOffering(recommended)">
+                                        <offering-card style="width: 100%" [offering]="recommended"></offering-card>
+                                    </mat-grid-tile>
+                                </mat-grid-list>
+                            </div>
+                        </ng-container>
+                    </div>
+                    <div class="contact-info">
+                        <offering-contact-information [loggedUser]="(loggedUser$ | async) ?? undefined"
+                            [offeringData]="offeringData" [selectedEvent]="(selectedEvent$ | async) || undefined"
+                            [userEvents]="(userEvents$ | async) ?? undefined"
+                            [isLoading]="!(offering && offeringData.owner)"
+                            (changeOfferingFromEvents)="changeOfferingEvents($event)"
+                            (addToSelectedEventEmitter)="addToSelectedEvent($event)"
+                            (removeFromSelectedEventEmitter)="removeFromSelectedEvent($event)">
+                        </offering-contact-information>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+    </ng-container>
+</ng-template>
+
+<error-page *ngIf="(error$ | async) as error; else pageContent" [errorCode]="error.status"
+    [errorDescription]="error.error.message" [actionMessage]="actionMessage" (onAction)="goBack()"></error-page>
+
+
+<ng-template #loadingSkeleton>
+    <div class="page-content">
+        <div>
+            <ngx-skeleton-loader [theme]=" { height: '50px', width: '40%' }" count="1"
+                appearance="line"></ngx-skeleton-loader>
+            <ngx-skeleton-loader [theme]=" { height: '28px' }" count="1" appearance="line"></ngx-skeleton-loader>
+        </div>
+        <div class="more-container">
+            <div class="details-container">
+                <mat-divider />
+                <div class="description-container">
+                    <ngx-skeleton-loader [theme]=" { height: '30px', width: '15%' }" count="1"
+                        appearance="line"></ngx-skeleton-loader>
+                    <div class="description-content">
+                        <ngx-skeleton-loader count="4" appearance="line"></ngx-skeleton-loader>
+                    </div>
+                </div>
+                <mat-divider />
+                <div class="reviews">
+                    <ngx-skeleton-loader [theme]=" { height: '30px', width: '15%' }" count="1"
+                        appearance="line"></ngx-skeleton-loader>
+                    <ngx-skeleton-loader [theme]=" { height: '60px' }" count="3"
+                        appearance="line"></ngx-skeleton-loader>
+                </div>
+            </div>
+            <div class="contact-info">
+                <offering-contact-information [isLoading]="true"></offering-contact-information>
+            </div>
+        </div>
+    </div>
+
+</ng-template>

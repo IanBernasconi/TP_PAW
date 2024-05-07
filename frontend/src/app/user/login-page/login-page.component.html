@@ -1,0 +1,98 @@
+<div class="page-container">
+  <form [formGroup]="loginForm" (ngSubmit)="login()">
+    <div class="page-content">
+      <h1 class="mt-4" i18n>Login</h1>
+      <div class="input-container">
+        <mat-form-field appearance="outline">
+          <mat-label i18n>Email</mat-label>
+          <input
+            matInput
+            placeholder="Email"
+            i18n-placeholder
+            formControlName="email"
+            required
+          />
+          <mat-error *ngIf="loginForm.get('email')?.hasError('required')" i18n>
+            You must enter a value
+          </mat-error>
+          <mat-error *ngIf="loginForm.get('email')?.hasError('email')" i18n>
+            Not a valid email
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div class="input-container">
+        <mat-form-field appearance="outline">
+          <mat-label i18n>Password</mat-label>
+          <input
+            matInput
+            [type]="hidePassword ? 'password' : 'text'"
+            placeholder="Password"
+            i18n-placeholder
+            formControlName="password"
+            required
+          />
+          <button
+            tabindex="-1"
+            type="button"
+            mat-icon-button
+            matSuffix
+            (click)="hidePassword = !hidePassword"
+            class="visibility-btn"
+          >
+            <mat-icon>{{
+              hidePassword ? "visibility_off" : "visibility"
+            }}</mat-icon>
+          </button>
+          <mat-error
+            *ngIf="loginForm.get('password')?.hasError('required')"
+            i18n
+          >
+            You must enter a value
+          </mat-error>
+          <mat-error
+            *ngIf="loginForm.get('password')?.hasError('minlength')"
+            i18n
+          >
+            Password must be at least 8 characters long
+          </mat-error>
+        </mat-form-field>
+        <mat-error *ngIf="loginForm.hasError('loginError')" i18n>
+          Invalid email or password
+        </mat-error>
+      </div>
+
+      <div class="forgot-password-container">
+        <p i18n>Forgot password?</p>
+        <a
+          tabindex="-1"
+          class="forgot-password-link"
+          routerLink="/user/forgot-password"
+          i18n
+          >Reset Password</a
+        >
+      </div>
+      <div class="register-container">
+        <p i18n>No account?</p>
+        <a tabindex="-1" class="register-link" routerLink="/user/register" i18n
+          >Register</a
+        >
+      </div>
+      <div class="checkbox-container">
+        <label>
+          <input tabindex="-1" type="checkbox" formControlName="rememberMe" />
+          <span i18n>Remember me</span>
+        </label>
+      </div>
+      <div class="login-btn-container">
+        <button
+          class="btn btn-dark btn-lg"
+          type="submit"
+          [disabled]="!loginForm.valid"
+          i18n
+        >
+          Login
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

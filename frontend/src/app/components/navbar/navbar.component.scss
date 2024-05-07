@@ -1,0 +1,83 @@
+nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row;
+  margin: 10px 0;
+
+  ul {
+    margin: 0;
+
+    li {
+      display: inline-block;
+      margin: 10px;
+
+      a {
+        text-decoration: none;
+        color: #5a5a5a;
+
+        &.active {
+          font-weight: bold;
+        }
+
+        .nav-logo {
+          width: 180px;
+          height: auto;
+          padding-bottom: 5px;
+        }
+      }
+    }
+  }
+}
+
+hr {
+  margin: 0;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+
+  .profile-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+
+    img {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #e5e5e5;
+      background-color: #ffffff;
+    }
+
+    .profile-picture-default {
+      font-size: 2rem;
+      width: 2rem;
+      height: 2rem;
+      line-height: 0;
+    }
+  }
+
+  .dropdown-menu {
+    padding: 5px 0;
+
+    a:hover,
+    a:focus {
+      background-color: darkgray;
+      color: white !important;
+    }
+
+    .dropdown-item {
+      width: 100%;
+
+      &.active {
+        background-color: darkgray;
+      }
+    }
+  }
+}

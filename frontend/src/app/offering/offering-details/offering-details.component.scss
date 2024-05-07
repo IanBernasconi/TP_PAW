@@ -1,0 +1,109 @@
+.page-content {
+    gap: 30px;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 5%;
+    margin: 10px 10% 0;
+
+    .more-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+
+        .details-container {
+            display: flex;
+            flex-direction: column;
+            width: 65%;
+
+            mat-divider {
+                width: 95%;
+                margin-bottom: 12px;
+            }
+
+            .description-container {
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;
+                margin-right: 20px;
+                width: 100%;
+
+                .title {
+                    font-size: 22px;
+                    font-weight: 350;
+                    margin-bottom: 10px;
+                }
+
+                .description-title-container {
+                    font-size: 22px;
+                    font-weight: 350;
+                    margin-bottom: 8px;
+                }
+
+                .description-content {
+                    font-weight: 400;
+                    font-size: 14px;
+                    line-height: 25px;
+                    max-width: 90%;
+                    overflow-wrap: break-word;
+                    margin-bottom: 50px;
+                    white-space: pre-wrap;
+
+                    .description {
+                        height: fit-content;
+                        overflow-y: auto;
+                        white-space: pre-line;
+                        max-height: 25rem;
+                    }
+                }
+            }
+
+            .provider-availability-container {
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;
+                margin-right: 20px;
+                width: 90%;
+                margin-bottom: 50px;
+
+                .title-container {
+                    font-size: 22px;
+                    font-weight: 350;
+                    margin-bottom: 8px;
+                }
+            }
+
+
+
+            .reviews {
+                width: 95%;
+
+                .title {
+                    font-size: 22px;
+                    font-weight: 350;
+                    margin-bottom: 10px;
+                }
+
+                p {
+                    white-space: pre-line;
+                }
+            }
+
+            .recommendations {
+                max-width: 150%;
+
+                .title {
+                    font-size: 22px;
+                    font-weight: 350;
+                    margin-bottom: 10px;
+                }
+
+
+            }
+        }
+
+        .contact-info {
+            width: 35%;
+        }
+
+    }
+}

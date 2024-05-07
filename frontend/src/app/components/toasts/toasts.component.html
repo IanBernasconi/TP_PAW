@@ -1,0 +1,3 @@
+<ngb-toast *ngIf="toastService.toasts[toastService.toasts.length - 1] as toast" [header]=" toast.header"
+  [class]="toast.classname" [autohide]="true" [delay]="toast.delay || 5000" (hidden)="toastService.remove(toast)">{{
+  toast.body }}</ngb-toast>

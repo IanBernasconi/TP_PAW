@@ -1,0 +1,54 @@
+<div class="row text-center title-container">
+  <div class="col-md-4">
+    <div class="btn-group">
+      <div class="btn btn-primary" mwlCalendarPreviousView [view]="view" [(viewDate)]="viewDate"
+        (viewDateChange)="getOwnerOccupiedDates()" i18n>
+        Previous
+      </div>
+      <div class="btn btn-outline-secondary" mwlCalendarToday [(viewDate)]="viewDate"
+        (viewDateChange)="getOwnerOccupiedDates()" i18n>
+        Today
+      </div>
+      <div class="btn btn-primary" mwlCalendarNextView [view]="view" [(viewDate)]="viewDate"
+        (viewDateChange)="getOwnerOccupiedDates()" i18n>
+        Next
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4 title-date">
+    <h5>{{ viewDate | calendarDate : view + "ViewTitle" : locale }}</h5>
+  </div>
+</div>
+<br />
+
+<div>
+  <mwl-calendar-month-view [cellTemplate]="cellTemplate" [viewDate]="viewDate" [events]="calendarEvents"
+    (dayClicked)="dayClicked($event.day)" (eventClicked)="handleEvent('Clicked', $event.event)"
+    [activeDayIsOpen]="activeDayIsOpen">
+  </mwl-calendar-month-view>
+</div>
+
+<ng-template #cellTemplate let-day="day" let-locale="locale" let-highlightDay="highlightDay"
+  let-unhighlightDay="unhighlightDay" let-eventClicked="eventClicked" let-tooltipTemplate="tooltipTemplate"
+  let-tooltipAppendToBody="tooltipAppendToBody" let-tooltipDelay="tooltipDelay" let-tooltipPlacement="tooltipPlacement"
+  let-trackByEventId="trackByEventId">
+  <div class="cal-cell-top" [class.cell-disabled]="isDateOccupied(day.date)">
+    <span class="cal-day-number">{{
+      day.date | calendarDate : "monthViewDayNumber" : locale
+      }}
+    </span>
+  </div>
+  <div class="cal-events" *ngIf="day.events.length > 0">
+    <div class="cal-event" *ngFor="let event of day.events; trackBy: trackByEventId"
+      [ngStyle]="{ backgroundColor: event.color?.primary }" [ngClass]="event?.cssClass"
+      (mouseenter)="highlightDay.emit({ event: event })" (mouseleave)="unhighlightDay.emit({ event: event })"
+      [mwlCalendarTooltip]="
+          event.title | calendarEventTitle : 'monthTooltip' : event
+        " [tooltipPlacement]="tooltipPlacement" [tooltipEvent]="event" [tooltipTemplate]="tooltipTemplate"
+      [tooltipAppendToBody]="tooltipAppendToBody" [tooltipDelay]="tooltipDelay" mwlDraggable
+      [class.cal-draggable]="event.draggable" dragActiveClass="cal-drag-active"
+      [dropData]="{ event: event, draggedFrom: day }" [dragAxis]="{ x: event.draggable, y: event.draggable }"
+      (mwlClick)="eventClicked.emit({ event: event, sourceEvent: $event })"
+      [attr.aria-hidden]="{} | calendarA11y : 'hideMonthCellEvents'"></div>
+  </div>
+</ng-template>

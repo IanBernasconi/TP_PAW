@@ -1,0 +1,1615 @@
+openapi: 3.0.0
+info:
+  title: Party Picker API
+  version: 1.0.0
+tags:
+  - name: Services
+    description: Endpoints related to services
+  - name: Events
+    description: Endpoints related to events
+  - name: Relations
+    description: Endpoints related to relations
+  - name: Reviews
+    description: Endpoints related to reviews
+  - name: Users
+    description: Endpoints related to users
+  - name: default
+    description: Other endpoints
+security:
+  - BearerAuth: []
+  - BasicAuth: []
+paths:
+  /categories:
+    get:
+      summary: Get service available categories
+      responses:
+        "200":
+          description: The service categories were successfully retrieved
+          content:
+            application/vnd.serviceCategories.v1+json:
+              schema:
+                $ref: "#/components/schemas/GeneralEnums"
+  /priceTypes:
+    get:
+      summary: Get available service price types
+      responses:
+        "200":
+          description: The service price types were successfully retrieved
+          content:
+            application/vnd.servicePriceTypes.v1+json:
+              schema:
+                $ref: "#/components/schemas/GeneralEnums"
+  /districts:
+    get:
+      summary: Get available districts
+      responses:
+        "200":
+          description: The districts were successfully retrieved
+          content:
+            application/vnd.districts.v1+json:
+              schema:
+                $ref: "#/components/schemas/GeneralEnums"
+  /users:
+    get:
+      summary: Get users
+      tags:
+        - Users
+      parameters:
+        - in: query
+          name: email
+          required: true
+          schema:
+            type: string
+            format: email
+          description: The email of the user
+      responses:
+        "200":
+          description: The users were successfully retrieved
+          content:
+            application/vnd.users.v1+json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+        "400":
+          description: Invalid request.
+    post:
+      summary: Create a user
+      tags:
+        - Users
+      requestBody:
+        description: The details of the new user
+        required: true
+        content:
+          application/vnd.user.v1+json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        "201":
+          description: The user was successfully created
+          headers:
+            Location:
+              description: URI of the created resource
+              schema:
+                type: string
+                format: uri
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FormErrors"
+        "409":
+          description: The email is already in use.
+  /users/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+          minimum: 0
+        description: The ID of the user
+    get:
+      summary: Get a user by ID
+      tags:
+        - Users
+      responses:
+        "200":
+          description: The user was successfully retrieved
+          content:
+            application/vnd.user.v1+json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "404":
+          description: The user was not found
+    put:
+      summary: Update a user
+      tags:
+        - Users
+      requestBody:
+        description: The new user details
+        required: true
+        content:
+          application/vnd.user.v1+json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        "200":
+          description: The user was successfully updated
+          content:
+            application/vnd.user.v1+json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: Invalid request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FormErrors"
+        "404":
+          description: The user was not found
+    patch:
+      summary: Update a user
+      tags:
+        - Users
+      requestBody:
+        description: The new user details
+        required: true
+        content:
+          application/vnd.userVerify.v1+json:
+            schema:
+              type: object
+              properties:
+                verified:
+                  type: boolean
+                  description: Whether the user is verified
+          application/vnd.userResetPassword.v1+json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                  description: A null value is required to reset the password
+          application/vnd.userPassword.v1+json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                  minLength: 8
+                  description: The new password of the user
+      responses:
+        "200":
+          description: The user was successfully updated
+          content:
+            application/vnd.user.v1+json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: Invalid request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FormErrors"
+        "404":
+          description: The user was not found
+  /users/{id}/occupiedDates:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+          minimum: 0
+        description: The ID of the user
+    get:
+      summary: Get the occupied dates of a user
+      tags:
+        - Users
+      parameters:
+        - in: query
+          name: from
+          schema:
+            type: string
+            format: date-time
+          description: The minimum date of the occupied dates to retrieve
+        - in: query
+          name: to
+          schema:
+            type: string
+            format: date-time
+          description: The maximum date of the occupied dates to retrieve
+      responses:
+        "200":
+          description: The occupied dates were successfully retrieved
+          content:
+            application/vnd.userOccupiedDates.v1+json:
+              schema:
+                type: object
+                properties:
+                  occupiedDates:
+                    type: array
+                    items:
+                      type: string
+                      format: date-time
+        "404":
+          description: The user was not found
+  /services:
+    get:
+      summary: Get services
+      tags:
+        - Services
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: The page number to retrieve
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: The number of services per page
+        - in: query
+          name: category
+          schema:
+            type: string
+          description: The category of the services
+        - in: query
+          name: minPrice
+          schema:
+            type: number
+            minimum: 0
+          description: The minimum price of the services
+        - in: query
+          name: maxPrice
+          schema:
+            type: number
+            minimum: 1
+          description: The maximum price of the services
+        - in: query
+          name: attendees
+          schema:
+            type: integer
+            minimum: 0
+          description: The number of attendees that the services can accommodate
+        - in: query
+          name: districts
+          schema:
+            type: array
+            items:
+              type: string
+          description: The districts where the services are located
+        - in: query
+          name: likedBy
+          schema:
+            type: integer
+          description: The ID of the user that liked the services
+        - in: query
+          name: sortType
+          schema:
+            type: string
+            enum:
+              - RATING_DESC
+              - REVIEW_COUNT_DESC
+              - POPULARITY_DESC
+        - in: query
+          name: search
+          schema:
+            type: string
+          description: The search query
+        - in: query
+          name: availableOn
+          schema:
+            type: string
+            format: date-time
+          description: The date in which the services need to be available
+        - in: query
+          name: createdBy
+          schema:
+            type: integer
+          description: The ID of the user that created the services
+        - in: query
+          name: event
+          schema:
+            type: integer
+          description: The ID of the event that the services requested are related to
+        - in: query
+          name: includeDeleted
+          schema:
+            type: boolean
+          description: Whether to include deleted services
+        - in: query
+          name: recommendedForEvent
+          schema:
+            type: integer
+          description: The ID of the event that the services requested are recommended for. Mutually exclusive with the other parameters, except for `page` and `pageSize`
+        - in: query
+          name: recommendedForOffering
+          schema:
+            type: integer
+          description: The ID of the offering that the services requested are recommended for. Mutually exclusive with the other parameters, except for `page` and `pageSize`
+      responses:
+        "200":
+          description: The services were successfully retrieved
+          headers:
+            first:
+              $ref: "#/components/headers/first"
+            last:
+              $ref: "#/components/headers/last"
+            next:
+              $ref: "#/components/headers/next"
+            prev:
+              $ref: "#/components/headers/prev"
+          content:
+            application/vnd.services.v1+json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Service"
+        "400":
+          description: Invalid request.
+    post:
+      summary: Create a service
+      tags:
+        - Services
+      requestBody:
+        description: The details of the new service
+        required: true
+        content:
+          application/vnd.service.v1+json:
+            schema:
+              $ref: "#/components/schemas/Service"
+      responses:
+        "201":
+          description: The service was successfully created
+          headers:
+            Location:
+              description: URI of the created resource
+              schema:
+                type: string
+                format: uri
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FormErrors"
+  /services/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+          minimum: 0
+        description: The ID of the service
+    get:
+      summary: Get a service by ID
+      tags:
+        - Services
+      responses:
+        "200":
+          description: The service was successfully retrieved
+          content:
+            application/vnd.service.v1+json:
+              schema:
+                $ref: "#/components/schemas/Service"
+        "404":
+          description: The service was not found
+    put:
+      summary: Update a service
+      tags:
+        - Services
+      requestBody:
+        description: The new service details
+        required: true
+        content:
+          application/vnd.service.v1+json:
+            schema:
+              $ref: "#/components/schemas/Service"
+      responses:
+        "200":
+          description: The service was successfully updated
+          content:
+            application/vnd.service.v1+json:
+              schema:
+                $ref: "#/components/schemas/Service"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FormErrors"
+        "404":
+          description: The service was not found
+    delete:
+      summary: Delete a service
+      tags:
+        - Services
+      responses:
+        "204":
+          description: The service was successfully deleted
+        "404":
+          description: The service was not found
+  /services/{id}/likes:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+          minimum: 0
+        description: The ID of the service
+    post:
+      summary: Like a service
+      tags:
+        - Services
+      requestBody:
+        description: The details of the new like
+        required: true
+        content:
+          application/vnd.like.v1+json:
+            schema:
+              $ref: "#/components/schemas/Like"
+      responses:
+        "201":
+          description: The service was successfully liked
+          headers:
+            Location:
+              description: URI of the created resource
+              schema:
+                type: string
+                format: uri
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FormErrors"
+        "404":
+          description: The service was not found
+  /services/{id}/likes/{userId}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+          minimum: 0
+        description: The ID of the service
+      - in: path
+        name: userId
+        required: true
+        schema:
+          type: integer
+          minimum: 0
+        description: The ID of the user
+    get:
+      summary: Get a like by ID
+      tags:
+        - Services
+      responses:
+        "200":
+          description: The like was successfully retrieved
+          content:
+            application/vnd.like.v1+json:
+              schema:
+                $ref: "#/components/schemas/Like"
+        "404":
+          description: The like was not found
+    delete:
+      summary: Unlike a service
+      tags:
+        - Services
+      responses:
+        "204":
+          description: The service was successfully unliked
+        "404":
+          description: The service or user was not found
+  /events:
+    get:
+      summary: Get events
+      tags:
+        - Events
+      parameters:
+        - in: query
+          name: user
+          schema:
+            type: integer
+          description: The ID of the user to retrieve events for
+          required: true
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: The page number to retrieve
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: The number of events per page
+        - in: query
+          name: from
+          schema:
+            type: string
+            format: date-time
+          description: The minimum date of the events to retrieve
+        - in: query
+          name: to
+          schema:
+            type: string
+            format: date-time
+          description: The maximum date of the events to retrieve
+      responses:
+        "200":
+          description: The events were successfully retrieved
+          headers:
+            first:
+              $ref: "#/components/headers/first"
+            last:
+              $ref: "#/components/headers/last"
+            next:
+              $ref: "#/components/headers/next"
+            prev:
+              $ref: "#/components/headers/prev"
+          content:
+            application/vnd.events.v1+json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Event"
+        "400":
+          description: Invalid request
+    post:
+      summary: Create an event
+      tags:
+        - Events
+      requestBody:
+        description: The details of the new event
+        required: true
+        content:
+          application/vnd.event.v1+json:
+            schema:
+              $ref: "#/components/schemas/Event"
+      responses:
+        "201":
+          description: The event was successfully created
+          headers:
+            Location:
+              description: URI of the created resource
+              schema:
+                type: string
+                format: uri
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FormErrors"
+  /events/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        description: The ID of the event
+    get:
+      summary: Get an event by ID
+      tags:
+        - Events
+      responses:
+        "200":
+          description: The event was successfully retrieved
+          content:
+            application/vnd.event.v1+json:
+              schema:
+                $ref: "#/components/schemas/Event"
+        "404":
+          description: The event was not found
+    put:
+      summary: Update an event
+      tags:
+        - Events
+      requestBody:
+        description: The new event details
+        required: true
+        content:
+          application/vnd.event.v1+json:
+            schema:
+              $ref: "#/components/schemas/Event"
+      responses:
+        "200":
+          description: The event was successfully updated
+          content:
+            application/vnd.event+json:
+              schema:
+                $ref: "#/components/schemas/Event"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FormErrors"
+        "404":
+          description: The event was not found
+    delete:
+      summary: Delete an event
+      tags:
+        - Events
+      responses:
+        "204":
+          description: The event was successfully deleted
+        "404":
+          description: The event was not found
+  /events/{id}/guests:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        description: The ID of the event
+    get:
+      summary: Get guests of an event
+      tags:
+        - Events
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: The page number to retrieve
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: The number of guests per page
+      responses:
+        "200":
+          description: The guests were successfully retrieved
+          headers:
+            first:
+              $ref: "#/components/headers/first"
+            last:
+              $ref: "#/components/headers/last"
+            next:
+              $ref: "#/components/headers/next"
+            prev:
+              $ref: "#/components/headers/prev"
+          content:
+            application/vnd.guests.v1+json:
+              schema:
+                $ref: "#/components/schemas/Guest"
+        "404":
+          description: The event was not found
+    post:
+      summary: Add a guest to an event
+      tags:
+        - Events
+      requestBody:
+        description: The details of the new guest
+        required: true
+        content:
+          application/vnd.guest.v1+json:
+            schema:
+              $ref: "#/components/schemas/Guest"
+      responses:
+        "201":
+          description: The guest was successfully added
+          headers:
+            Location:
+              description: URI of the created resource
+              schema:
+                type: string
+                format: uri
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FormErrors"
+        "404":
+          description: The event was not found
+    patch:
+      summary: Update a guest of an event
+      tags:
+        - Events
+      requestBody:
+        description: The new guest details
+        required: true
+        content:
+          application/vnd.guestStatus.v1+json:
+            schema:
+              type: object
+              properties:
+                status:
+                  $ref: "#/components/schemas/GuestStatusEnum"
+      responses:
+        "200":
+          description: The guest was successfully updated
+          content:
+            application/vnd.guest+json:
+              schema:
+                $ref: "#/components/schemas/Guest"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FormErrors"
+        "404":
+          description: The event was not found
+    delete:
+      summary: Remove a guest from an event
+      tags:
+        - Events
+      responses:
+        "204":
+          description: The guest was successfully removed
+        "400":
+          description: Invalid request
+        "404":
+          description: The event or guest was not found
+  /images:
+    post:
+      summary: Upload an image
+      requestBody:
+        description: The image to upload
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: string
+              format: binary
+      responses:
+        "201":
+          description: The image was successfully uploaded
+          headers:
+            Location:
+              description: URI of the created resource
+              schema:
+                type: string
+                format: uri
+  /images/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          format: uri
+        description: The URI of the image
+    get:
+      summary: Get an image by URI
+      responses:
+        "200":
+          description: The image was successfully retrieved
+          content:
+            image/*:
+              schema:
+                type: string
+                format: binary
+        "404":
+          description: The image was not found
+  /relations:
+    get:
+      summary: Get relations
+      tags:
+        - Relations
+      parameters:
+        - in: query
+          name: provider
+          schema:
+            type: integer
+          description: The ID of the provider. Either this or the `event` parameter must be specified.
+        - in: query
+          name: event
+          schema:
+            type: integer
+          description: The ID of the event. Either this or the `provider` parameter must be specified.
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: The page number to retrieve
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: The number of relations per page
+        - in: query
+          name: from
+          schema:
+            type: string
+            format: date-time
+          description: The minimum date of the relations to retrieve
+        - in: query
+          name: to
+          schema:
+            type: string
+            format: date-time
+          description: The maximum date of the relations to retrieve
+        - in: query
+          name: status
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/RelationStatusEnum"
+          style: form
+          explode: true
+          description: An array containing any subset of the RelationStatusEnum values.
+        - in: query
+          name: offering
+          schema:
+            type: integer
+          description: The ID of the offering that the relations are related to
+      responses:
+        "200":
+          description: The relations were successfully retrieved
+          headers:
+            first:
+              $ref: "#/components/headers/first"
+            last:
+              $ref: "#/components/headers/last"
+            next:
+              $ref: "#/components/headers/next"
+            prev:
+              $ref: "#/components/headers/prev"
+          content:
+            application/vnd.relations.v1+json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Relation"
+        "400":
+          description: Invalid request
+    post:
+      summary: Create a relation
+      tags:
+        - Relations
+      requestBody:
+        description: The details of the new relation
+        required: true
+        content:
+          application/vnd.relation.v1+json:
+            schema:
+              $ref: "#/components/schemas/Relation"
+      responses:
+        "201":
+          description: The relation was successfully created
+          headers:
+            Location:
+              description: URI of the created resource
+              schema:
+                type: string
+                format: uri
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FormErrors"
+  /relations/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        description: The ID of the relation
+    get:
+      summary: Get a relation by ID
+      tags:
+        - Relations
+      responses:
+        "200":
+          description: The relation was successfully retrieved
+          content:
+            application/vnd.relation.v1+json:
+              schema:
+                $ref: "#/components/schemas/Relation"
+        "404":
+          description: The relation was not found
+    delete:
+      summary: Delete a relation
+      tags:
+        - Relations
+      responses:
+        "204":
+          description: The relation was successfully deleted
+        "404":
+          description: The relation was not found
+    patch:
+      summary: Update relation status
+      tags:
+        - Relations
+      requestBody:
+        description: The new status for the relation
+        required: true
+        content:
+          application/vnd.relationStatus.v1+json:
+            schema:
+              $ref: "#/components/schemas/RelationStatus"
+          application/vnd.relationReadStatus.v1+json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: string
+                  format: uri
+                  description: The URI of the user that read the conversation
+                read:
+                  type: boolean
+                  description: Whether the user read the conversation
+      responses:
+        "200":
+          description: The relation was successfully updated
+          content:
+            application/vnd.relation.v1+json:
+              schema:
+                $ref: "#/components/schemas/Relation"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FormErrors"
+        "404":
+          description: The relation was not found
+  /relations/{id}/messages:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        description: The ID of the relation
+    get:
+      summary: Get the messages of a conversation
+      tags:
+        - Relations
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: The page number to retrieve
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: The number of messages per page
+      responses:
+        "200":
+          description: The messages were successfully retrieved
+          headers:
+            first:
+              $ref: "#/components/headers/first"
+            last:
+              $ref: "#/components/headers/last"
+            next:
+              $ref: "#/components/headers/next"
+            prev:
+              $ref: "#/components/headers/prev"
+          content:
+            application/vnd.messages.v1+json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Message"
+        "404":
+          description: The relation was not found
+    post:
+      summary: Send a message to a conversation
+      tags:
+        - Relations
+      requestBody:
+        description: The details of the new message
+        required: true
+        content:
+          application/vnd.message.v1+json:
+            schema:
+              $ref: "#/components/schemas/Message"
+      responses:
+        "201":
+          description: The message was successfully sent
+          headers:
+            Location:
+              description: URI of the created resource
+              schema:
+                type: string
+                format: uri
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FormErrors"
+        "404":
+          description: The relation was not found
+  /relations/{id}/messages/{messageId}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        description: The ID of the relation
+      - in: path
+        name: messageId
+        required: true
+        schema:
+          type: integer
+        description: The ID of the message
+    get:
+      summary: Get a message by ID
+      tags:
+        - Relations
+      responses:
+        "200":
+          description: The message was successfully retrieved
+          content:
+            application/vnd.message.v1+json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "404":
+          description: The relation or message was not found
+  /reviews:
+    get:
+      summary: Get reviews by event or offering
+      tags:
+        - Reviews
+      parameters:
+        - in: query
+          name: event
+          schema:
+            type: integer
+          description: The ID of the event. Either this or the `offering` parameter must be specified.
+        - in: query
+          name: offering
+          schema:
+            type: integer
+          description: The ID of the offering. Either this or the `event` parameter must be specified.
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: The page number to retrieve
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: The number of reviews per page
+      responses:
+        "200":
+          description: The reviews were successfully retrieved
+          headers:
+            first:
+              $ref: "#/components/headers/first"
+            last:
+              $ref: "#/components/headers/last"
+            next:
+              $ref: "#/components/headers/next"
+            prev:
+              $ref: "#/components/headers/prev"
+          content:
+            application/vnd.reviews.v1+json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Review"
+        "400":
+          description: Invalid request. At least one of `event` or `offering` must be specified
+    post:
+      summary: Create a review
+      tags:
+        - Reviews
+      requestBody:
+        description: The details of the new review
+        required: true
+        content:
+          application/vnd.review.v1+json:
+            schema:
+              $ref: "#/components/schemas/Review"
+      responses:
+        "201":
+          description: The review was successfully created
+          headers:
+            Location:
+              description: URI of the created resource
+              schema:
+                type: string
+                format: uri
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FormErrors"
+  /reviews/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        description: The ID of the review
+    get:
+      summary: Get a review by ID
+      tags:
+        - Reviews
+      responses:
+        "200":
+          description: The review was successfully retrieved
+          content:
+            application/vnd.review.v1+json:
+              schema:
+                $ref: "#/components/schemas/Review"
+        "404":
+          description: The review was not found
+
+components:
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          description: The ID of the user
+        name:
+          type: string
+          minLength: 4
+          maxLength: 40
+          description: The name of the user
+        password:
+          type: string
+          minLength: 8
+          format: password
+          writeOnly: true
+          description: The password of the user
+        email:
+          type: string
+          format: email
+          description: The email of the user
+        provider:
+          type: boolean
+          description: Whether the user is a service provider
+        averageRating:
+          type: number
+          readOnly: true
+          description: The average rating of the user
+        totalLikes:
+          type: integer
+          readOnly: true
+          description: The total number of likes of the user
+        totalEventsWorkedOn:
+          type: integer
+          readOnly: true
+          description: The total number of events that the user worked on
+        language:
+          type: string
+          description: The language the user prefers
+        description:
+          type: string
+          description: The description of the user
+        profilePicture:
+          type: string
+          format: uri
+          description: The URI to the profile picture of the user
+        self:
+          type: string
+          format: uri
+          readOnly: true
+          description: The URI to the user
+        createdEvents:
+          type: string
+          format: uri
+          readOnly: true
+          description: The URI to retrieve the events of the user
+        createdOfferings:
+          type: string
+          format: uri
+          readOnly: true
+          description: The URI to retrieve the offerings of the user
+        providerRelations:
+          type: string
+          format: uri
+          readOnly: true
+          description: The URI to retrieve the provider relations of the user
+        occupiedDates:
+          type: string
+          format: uri
+          readOnly: true
+          description: The URI to retrieve the occupied dates of the user
+
+    Service:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          description: The ID of the service
+        name:
+          type: string
+          minLength: 4
+          maxLength: 32
+          description: The name of the service
+        description:
+          type: string
+          description: The description of the service
+        category:
+          type: string
+          description: The category of the service
+        minPrice:
+          type: number
+          description: The minimum price of the service
+        maxPrice:
+          type: number
+          description: The maximum price of the service
+        priceType:
+          type: string
+          description: The price type of the service
+        maxGuests:
+          type: integer
+          minimum: 0
+          description: The maximum number of guests that the service can accommodate
+        district:
+          type: string
+          description: The location of the service
+        deleted:
+          type: boolean
+          readOnly: true
+          description: Whether the service was deleted
+        likes:
+          type: integer
+          readOnly: true
+          description: The number of likes of the service
+        rating:
+          type: number
+          readOnly: true
+          description: The rating of the service
+        self:
+          type: string
+          format: uri
+          readOnly: true
+          description: The URI to retrieve the full details of the service
+        owner:
+          type: string
+          format: uri
+          readOnly: true
+          description: The URI of the user that created the service
+        images:
+          type: array
+          items:
+            type: string
+            format: uri
+          description: The URIs to the images of the service
+        reviews:
+          type: string
+          format: uri
+          readOnly: true
+          description: The URI to retrieve the reviews of the service
+
+    Like:
+      type: object
+      properties:
+        self:
+          type: string
+          format: uri
+          readOnly: true
+          description: The URI to retrieve the full details of the like
+        offering:
+          type: string
+          format: uri
+          readOnly: true
+          description: The URI of the service that was liked
+        user:
+          type: string
+          format: uri
+          description: The URI of the user that liked the service
+        liked:
+          type: boolean
+          description: Whether the user liked the service
+
+    Event:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          description: The ID of the event
+        name:
+          type: string
+          minLength: 4
+          maxLength: 50
+          description: The name of the event
+        description:
+          type: string
+          description: The description of the event
+        date:
+          type: string
+          format: date-time
+          description: The date of the event
+        numberOfGuests:
+          type: integer
+          minimum: 1
+          description: The number of guests expected at the event
+        district:
+          type: string
+          description: The location of the event
+        self:
+          type: string
+          format: uri
+          readOnly: true
+          description: The URI to retrieve the full details of the event
+        owner:
+          type: string
+          format: uri
+          description: The URI of the organizer
+        relations:
+          type: string
+          format: uri
+          readOnly: true
+          description: The URI to retrieve the relations of the event
+        relatedOfferings:
+          type: string
+          format: uri
+          readOnly: true
+          description: The URI to retrieve the offerings related to the event
+        reviews:
+          type: string
+          format: uri
+          readOnly: true
+          description: The URI to retrieve the reviews of the event
+        guests:
+          type: string
+          format: uri
+          readOnly: true
+          description: The URI to retrieve the guests of the event
+
+    Relation:
+      type: object
+      properties:
+        relationId:
+          type: integer
+          readOnly: true
+          description: The ID of the relation
+        status:
+          $ref: "#/components/schemas/RelationStatusEnum"
+        self:
+          type: string
+          format: uri
+          readOnly: true
+          description: The URI to retrieve the full details of the relation
+        event:
+          type: string
+          format: uri
+          readOnly: true
+          description: The URI of the related event
+        offering:
+          type: string
+          format: uri
+          readOnly: true
+          description: The URI of the related offering
+        review:
+          type: string
+          format: uri
+          readOnly: true
+          description: The URI of the related review
+        lastMessage:
+          type: string
+          format: uri
+          readOnly: true
+          description: The URI to retrieve the last message of the conversation
+        messages:
+          type: string
+          format: uri
+          readOnly: true
+          description: The URI to retrieve the messages of the conversation
+        organizer:
+          type: string
+          format: uri
+          readOnly: true
+          description: The URI of the organizer
+        provider:
+          type: string
+          format: uri
+          readOnly: true
+          description: The URI of the provider
+        providerUnreadMessagesCount:
+          type: integer
+          readOnly: true
+          description: The number of unread messages of the provider
+        organizerUnreadMessagesCount:
+          type: integer
+          readOnly: true
+          description: The number of unread messages of the organizer
+
+    RelationStatus:
+      type: object
+      properties:
+        status:
+          $ref: "#/components/schemas/RelationStatusEnum"
+
+    RelationStatusEnum:
+      type: string
+      enum:
+        - NEW
+        - PENDING
+        - ACCEPTED
+        - REJECTED
+        - DONE
+      description: The status of the relation
+
+    Message:
+      type: object
+      properties:
+        self:
+          type: string
+          format: uri
+          readOnly: true
+          description: The URI to retrieve the full details of the message
+        sender:
+          type: string
+          format: uri
+          description: The URI of the sender
+        receiver:
+          type: string
+          format: uri
+          readOnly: true
+          description: The URI of the receiver
+        message:
+          type: string
+          description: The text of the message
+        timestamp:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date of the message
+        isRead:
+          type: boolean
+          readOnly: true
+          description: Whether the message was read by the receiver
+
+    Review:
+      type: object
+      properties:
+        review:
+          type: string
+          maxLength: 4096
+          description: The comment of the review
+        rating:
+          type: integer
+          minimum: 0
+          maximum: 5
+          description: The rating of the review
+        date:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date of the review
+        self:
+          type: string
+          format: uri
+          readOnly: true
+          description: The URI to retrieve the full details of the review
+        relation:
+          type: string
+          format: uri
+          description: The URI of the related relation
+
+    Guest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          description: The email of the guest
+        status:
+          $ref: "#/components/schemas/GuestStatusEnum"
+        self:
+          type: string
+          format: uri
+          readOnly: true
+          description: The URI to retrieve the full details of the guest
+
+    GuestStatusEnum:
+      type: string
+      enum:
+        - NEW
+        - PENDING
+        - ACCEPTED
+        - REJECTED
+      description: The status of the guest
+
+    FormErrors:
+      type: array
+      items:
+        type: object
+        properties:
+          fieldName:
+            type: string
+            description: The name of the field that caused the error
+          message:
+            type: string
+            description: The error message
+
+    GeneralEnums:
+      type: array
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+            description: The name of the category
+          value:
+            type: string
+            description: The internationalized name of the category
+
+  headers:
+    first:
+      schema:
+        type: string
+        format: uri
+      description: The URI to the first page of the results
+    last:
+      schema:
+        type: string
+        format: uri
+      description: The URI to the last page of the results
+    next:
+      schema:
+        type: string
+        format: uri
+      description: The URI to the next page of the results, if there is one
+    prev:
+      schema:
+        type: string
+        format: uri
+      description: The URI to the previous page of the results, if there is one
+
+servers:
+  - description: Party Picker API
+    url: http://pawserver.it.itba.edu.ar/paw-2023b-04/api

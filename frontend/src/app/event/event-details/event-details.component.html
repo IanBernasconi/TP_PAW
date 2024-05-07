@@ -1,0 +1,77 @@
+<ng-template #pageContent>
+  <ng-container *ngIf="!(isLoading$ | async); else loadingPage">
+    <div *ngIf="selectedEvent$ | async as eventInfo" class="content">
+      <go-back-button (goBack)="goBack()"></go-back-button>
+      <div class="heading">
+        <h2>{{ eventInfo.event.name }}</h2>
+        <div>
+          <div *ngIf="eventInfo.event.date >= currentDate" class="edit-event-btn-container">
+            <a class="edit-event-btn btn btn-dark btn-sm" (click)="openEditEventDialog()" i18n>
+              Edit
+              <i class="bi bi-pencil-square"></i>
+            </a>
+            <button class="ms-3 btn btn-danger" type="button" (click)="openDeleteEventDialog()">
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="description-container">
+        <span *ngIf="eventInfo.event.description.length > 0" class="event-description-text">
+          {{ eventInfo.event.description }}
+        </span>
+      </div>
+      <main>
+        <mat-tab-group #tabGroup [selectedIndex]="activeTab" (selectedTabChange)="onTabChanged($event)">
+          <mat-tab label="Details" i18n-label>
+            <event-tags [event]="eventInfo.event" />
+            <event-table [event]="eventInfo.event" [relationsByOfferingCategory]="eventInfo.relationsByCategory"
+              [relations]="eventInfo.relationsByURI" [active]="eventInfo.event.date >= currentDate"
+              (reviewOffering)="reviewOffering($event)" (contactProvider)="contactProvider($event)"
+              (removeRelation)="removeRelation($event)" (goToExplore)="navigateToExplorer($event)"
+              (goToService)="navigateToOffering($event)" />
+            <ng-container *ngIf="
+                eventInfo.event.date >= currentDate &&
+                eventInfo.recommendations &&
+                eventInfo.recommendations!.length > 0
+              ">
+              <h3 i18n>Recommended services</h3>
+              <mat-grid-list [cols]="5" rowHeight="3:4" gutterSize="20px">
+                <mat-grid-tile *ngFor="let recommended of eventInfo.recommendations"
+                  (click)="navigateToOffering(recommended)">
+                  <offering-card style="width: 100%" [offering]="recommended"></offering-card>
+                </mat-grid-tile>
+              </mat-grid-list>
+            </ng-container>
+          </mat-tab>
+          <mat-tab label="Guests" i18n-label>
+            <event-guests [event]="eventInfo.event" [active]="eventInfo.event.date >= currentDate" />
+          </mat-tab>
+          <mat-tab label="Chat" i18n-label>
+            <event-chat [loggedUser]="(loggedUser$ | async)!" [event]="eventInfo.event"
+              [relations]="eventInfo.relations" [selected]="selectedChatTab"
+              (markConversationAsRead)="markConversationAsRead($event)" (updateLastMessage)="updateLastMessage($event)"
+              [active]="eventInfo.event.date >= currentDate" /></mat-tab>
+        </mat-tab-group>
+      </main>
+    </div>
+  </ng-container>
+</ng-template>
+
+<ng-template #loadingPage>
+  <div class="content">
+    <div class="header">
+      <ngx-skeleton-loader [theme]="{ height: '32px', width: '100px' }" count="1"></ngx-skeleton-loader>
+    </div>
+    <ngx-skeleton-loader [theme]="{ height: '20px', width: '300px' }" count="1"></ngx-skeleton-loader>
+    <main>
+      <ngx-skeleton-loader [theme]="{ height: '50px' }" count="1"></ngx-skeleton-loader>
+      <ngx-skeleton-loader [theme]="{ height: '30px', width: '500px' }" count="1"></ngx-skeleton-loader>
+      <ngx-skeleton-loader [theme]="{ height: '40px' }" count="5"></ngx-skeleton-loader>
+      <ngx-skeleton-loader [theme]="{ height: '40px', width: '150px' }" count="1"></ngx-skeleton-loader>
+    </main>
+  </div>
+</ng-template>
+<error-page *ngIf="error$ | async as error; else pageContent" [errorCode]="error.status"
+  [errorDescription]="error.error.message" [actionMessage]="actionMessage" (onAction)="goBack()">
+</error-page>

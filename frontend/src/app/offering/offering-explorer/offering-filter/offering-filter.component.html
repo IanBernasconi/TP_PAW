@@ -1,0 +1,72 @@
+<form [formGroup]="filterForm" class="filter-form" (ngSubmit)="onSubmit()" novalidate>
+  <div class="category-container">
+    <div class="category-button" *ngFor="let category of OfferingCategory$ | async">
+      <input type="radio" id="{{ category.name }}" name="category" [value]="category.name" formControlName="category"
+        (change)="onSubmit()" />
+      <label for="{{ category.name }}">
+        <img src="assets/images/category/{{ category.name | uppercase }}-icon.svg" alt="{{ category.value }} icon" />
+        <span>{{ category.value }}</span>
+      </label>
+    </div>
+  </div>
+
+  <div class="second-row">
+    <div class="input-group input-group-sm">
+      <label class="input-group-text">
+        <mat-icon matPrefix>search</mat-icon>
+      </label>
+      <input class="form-control" matInput placeholder="Search" i18n-placeholder formControlName="search" />
+    </div>
+
+    <div class="input-group input-group-sm">
+      <label class="input-group-text">
+        <mat-icon matPrefix>people</mat-icon>
+        <mat-label i18n>Attendees</mat-label>
+      </label>
+      <input class="form-control" matInput type="number" min="0" placeholder="" formControlName="attendees" />
+      <mat-error *ngIf="filterForm.controls['attendees'].invalid">
+        Please enter a valid number of attendees
+      </mat-error>
+    </div>
+    <div *ngIf="showPriceRangeSelector()" class="input-group input-group-sm" id="price-range-filter">
+      <label class="input-group-text" i18n> Price range </label>
+      <input class="form-control positive-input" type="number" formControlName="minPrice" />
+      <label class="input-group-text">-</label>
+      <input class="form-control positive-input" type="number" formControlName="maxPrice" />
+      <span class="input-group-text" id="price-type-display">
+        {{ currentCategoryPriceType() | async }}
+      </span>
+    </div>
+
+    <button mat-stroked-button type="button" (click)="onReset()" i18n>
+      Reset
+    </button>
+    <button mat-raised-button color="primary" type="submit" [disabled]="!filterForm.valid"
+      style="color: white; font-weight: 550;" i18n>
+      Apply
+    </button>
+  </div>
+  <div class="third-row">
+    <mat-tab-group #tabGroup (selectedTabChange)="onTabChange($event)">
+      <mat-tab *ngIf="loggedUser" label="All" i18n-label></mat-tab>
+      <mat-tab *ngIf="loggedUser" label="Liked" i18n-label></mat-tab>
+    </mat-tab-group>
+    <mat-form-field>
+      <mat-label i18n>Sort by</mat-label>
+      <mat-select formControlName="sortType">
+        <mat-option *ngFor="let sortType of SortType | keyvalue" [value]="sortType.key">
+          {{ sortType.value }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label i18n>Districts</mat-label>
+      <mat-select formControlName="districts" multiple>
+        <mat-option *ngFor="let district of districts$ | async" [value]="district.name">
+          {{ district.value }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-checkbox (change)="toggleEnableDistricts()" i18n>Filter by District</mat-checkbox>
+  </div>
+</form>

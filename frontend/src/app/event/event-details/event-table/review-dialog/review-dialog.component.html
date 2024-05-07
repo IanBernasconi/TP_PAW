@@ -1,0 +1,29 @@
+<div *ngIf="data?.relationInfo">
+  <h1 mat-dialog-title i18n>Review {{ data.relationInfo.provider.name }}</h1>
+  <div mat-dialog-content class="dialog-content">
+    <p i18n>How was the service?</p>
+    <ngb-rating
+      [max]="5"
+      [(rate)]="data.rating"
+      [readonly]="false"
+      class="mb-2"
+    ></ngb-rating>
+    <mat-form-field appearance="outline">
+      <mat-label i18n>Review</mat-label>
+      <textarea matInput [(ngModel)]="data.content" maxlength="500"></textarea>
+    </mat-form-field>
+  </div>
+  <mat-dialog-actions style="justify-content: space-between">
+    <button mat-button mat-dialog-close i18n>Cancel</button>
+    <button
+      mat-raised-button
+      [mat-dialog-close]="data"
+      cdkFocusInitial
+      color="primary"
+      style="color: white"
+      i18n
+    >
+      Confirm
+    </button>
+  </mat-dialog-actions>
+</div>

@@ -1,0 +1,68 @@
+.info-container {
+    position: relative;
+    display: flex !important;
+    align-items: flex-start;
+    flex-direction: column;
+    width: 100% !important;
+    padding: 10px;
+    border-radius: 0 !important;
+    border: 0 !important;
+
+    &:not(:hover) {
+        background: #fff;
+    }
+
+
+    .row-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+
+        .name {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .time {
+            margin: 0;
+            font-size: 0.75rem;
+            color: #717171;
+            width: fit-content;
+        }
+
+        .lastMessage {
+            margin: 0;
+            font-size: 0.75rem;
+            color: #717171;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .unread-messages-count {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 1.25rem;
+            aspect-ratio: 1/1;
+            padding: 0 5px;
+            background: #25d366;
+            border-radius: 50%;
+            color: white;
+            font-size: 0.75rem;
+            margin: 0;
+
+            p {
+                position: absolute;
+                width: fit-content;
+                height: fit-content;
+                font-weight: bold;
+                margin: 0;
+            }
+        }
+    }
+}

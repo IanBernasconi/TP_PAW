@@ -1,0 +1,11 @@
+<div class="page-content">
+  <div class="content">
+    <offering-filter [filter]="filter" [loggedUser]="(loggedUser$ | async) ?? undefined"
+      (filterChangedEvent)="filterChanged($event)"></offering-filter>
+    <offering-list [offerings]="(offerings$ | async)!" [isLoading]="!!(isLoading$ | async)"
+      [isLoadingLikes]="!!(isLoadingLikes$ | async)" [likes]="(offeringsLikes$ | async) ?? undefined"
+      (clickedOfferingEvent)="navigateToOffering($event)" (changePageEvent)="fetchOfferings($event)"
+      [loggedUser]="(loggedUser$ | async) ?? undefined" (likeOffering)="likeOffering($event)"
+      (deleteLike)="deleteLike($event)"></offering-list>
+  </div>
+</div>

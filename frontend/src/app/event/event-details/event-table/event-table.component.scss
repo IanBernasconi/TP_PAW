@@ -1,0 +1,39 @@
+th {
+  font-weight: 500;
+  font-size: 20px;
+}
+
+.first-th {
+  border-radius: 5px 0 0 0;
+}
+
+td {
+  font-size: 18px;
+  vertical-align: middle;
+}
+
+.td-anchor {
+  text-decoration: none;
+  color: var(--bs-info);
+}
+
+.offering-name-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.no-relations-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 30vh;
+}
+
+.another-category-container {
+
+  ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+
+
+}

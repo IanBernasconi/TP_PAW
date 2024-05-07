@@ -1,0 +1,123 @@
+<form *ngIf="loggedUser$ | async as user" [formGroup]="profileForm" [connectForm]="user" (ngSubmit)="saveChanges()"
+  autocomplete="off">
+  <div class="page-content">
+    <mat-card class="profile-card">
+      <div class="profile-top-row">
+        <div class="profile-picture-container">
+          <img *ngIf="user.profilePicture && !isPictureRemoved; else noPicture" [src]="user.profilePicture"
+            alt="Profile Picture" class="profile-picture-preview" />
+          <ng-template #noPicture>
+            <img *ngIf="profilePicturePreview; else defaultIconTemplate" [src]="profilePicturePreview"
+              alt="Profile Picture" class="profile-picture-preview" />
+            <ng-template #defaultIconTemplate>
+              <i class="bi bi-person-circle profile-picture"></i>
+            </ng-template>
+          </ng-template>
+          <div *ngIf="editMode" class="dropdown">
+            <a class="btn btn-light btn-sm dropdown-toggle" type="button" id="dropdownMenuButton1"
+              data-bs-toggle="dropdown" aria-expanded="false" i18n>
+              <i class="bi bi-camera"></i> Upload
+            </a>
+            <input type="file" accept="image/*" #fileInput style="display: none" (change)="onFileSelected($event)" />
+            <ul class="dropdown-menu">
+              <li class="dropdown-item" (click)="fileInput.click()" i18n>
+                Upload a photo
+              </li>
+              <li class="dropdown-item" (click)="removeProfilePicture()" i18n>
+                Remove a photo
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="user-data">
+          <div *ngIf="!editMode; else editNameTemplate" class="name-container">
+            <span class="user-name">{{ user.name }}</span>
+            <div *ngIf="user.provider" class="badge rounded-pill text-bg-primary provider-badge">
+              <span i18n class="provider-badge-text">Provider</span>
+            </div>
+            <button *ngIf="!user.provider" class="btn btn-primary btn-sm" (click)="becomeProvider()" i18n type="button">
+              Become Provider
+            </button>
+          </div>
+          <ng-template #editNameTemplate>
+            <div class="name-container">
+              <mat-form-field [floatLabel]="'always'" appearance="outline">
+                <mat-label i18n>Name</mat-label>
+                <input id="nameInputmy-label" matInput formControlName="name" placeholder="{{ user.name }}" />
+                <mat-error>
+                  <ng-container *ngIf="name?.errors?.['required']" i18n>Name is required.</ng-container>
+                  <ng-container *ngIf="name?.errors?.['minlength']" i18n>
+                    Name must be at least
+                    {{ name?.errors?.['minlength'].requiredLength }}
+                    characters long.
+                  </ng-container>
+                  <ng-container *ngIf="name?.errors?.['maxlength']" i18n>
+                    Name must be less than
+                    {{ name?.errors?.['maxlength'].requiredLength }}
+                    characters long.
+                  </ng-container>
+                </mat-error>
+              </mat-form-field>
+            </div>
+          </ng-template>
+          <div class="email-input-container" style="width: 250px;">
+            <label i18n for="emailId" class="email-label">Email</label>
+            <input id="emailId" matInput [value]="user.email" [disabled]="true" class="email-input"
+              style="width: 100%; max-width: 100%;" />
+          </div>
+        </div>
+      </div>
+      <div *ngIf="!editMode; else editProfileDataTemplate" class="profile-data-container">
+        <div class="data-input-container">
+          <label for="languageId" class="my-label" i18n>Language for emails</label>
+          <span id="languageId" type="text" class="my-input">{{ getLanguageName(user.language) }}</span>
+        </div>
+        <div class="data-input-container">
+          <label for="aboutMeId" class="my-label" i18n>About me</label>
+          <p id="aboutMeId" *ngIf="user.description; else emptyDescription" style="white-space: pre">
+            {{ user.description }}
+          </p>
+          <ng-template #emptyDescription>
+            <p i18n id="aboutMeId" class="empty-description-text">Add a description to your profile!</p>
+          </ng-template>
+        </div>
+        <div class="edit-button-container">
+          <button class="btn btn-secondary btn-sm edit-button" (click)="toggleEditMode()" i18n>
+            Edit profile
+          </button>
+        </div>
+      </div>
+      <ng-template #editProfileDataTemplate>
+        <div class="profile-data-container">
+          <div class="data-input-container">
+            <div class="edit-language-container">
+              <mat-form-field appearance="outline" [floatLabel]="'always'">
+                <mat-label i18n>Language for emails</mat-label>
+                <mat-select formControlName="language" placeholder="{{ getLanguageName(user.language) }}">
+                  <mat-option *ngFor="let language of languageOptions | keyvalue" [value]="language.key">
+                    {{ language.value }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="data-input-container">
+            <mat-form-field appearance="outline" [floatLabel]="'always'">
+              <mat-label i18n>About me</mat-label>
+              <textarea #aboutMeFieldId matInput formControlName="description">{{user.description}}</textarea>
+            </mat-form-field>
+          </div>
+          <div class="edit-button-container">
+            <button class="btn btn-success btn-sm" type="submit" [disabled]="!profileForm.valid || !profileForm.dirty"
+              i18n>
+              Save changes
+            </button>
+            <button class="btn btn-light btn-sm" i18n (click)="cancelEdit()">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </ng-template>
+    </mat-card>
+  </div>
+</form>

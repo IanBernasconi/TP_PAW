@@ -1,0 +1,7 @@
+<div class="page-content">
+  <go-back-button (goBack)="goBack()"></go-back-button>
+  <h1 i18n>Offer your service</h1>
+  <h3 i18n>Service information</h3>
+  <offering-data-form *ngIf="(loggedUser$ | async) as loggedUser" [loggedUser]="loggedUser"
+    (createOfferingEvent)="createOffering($event)"></offering-data-form>
+</div>

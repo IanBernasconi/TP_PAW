@@ -1,0 +1,19 @@
+<div *ngIf="data?.relationInfo">
+  <h1 mat-dialog-title i18n>Contact {{ data.relationInfo.provider.name }}</h1>
+  <div mat-dialog-content class="dialog-content">
+    <p i18n>The provider will receive your request</p>
+  </div>
+  <mat-dialog-actions style="justify-content: space-between">
+    <button mat-button mat-dialog-close i18n>Cancel</button>
+    <button
+      mat-raised-button
+      [mat-dialog-close]="data"
+      cdkFocusInitial
+      color="primary"
+      style="color: white"
+      i18n
+    >
+      Confirm
+    </button>
+  </mat-dialog-actions>
+</div>

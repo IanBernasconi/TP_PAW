@@ -1,0 +1,14 @@
+<ng-template #page>
+    <div class="page-content">
+        <go-back-button (goBack)="goBackToDetails()"></go-back-button>
+        <h1 i18n>Edit your service </h1>
+        <h3 i18n>Service information</h3>
+
+        <offering-data-form *ngIf="(offering$ | async)?.offering as offering" [loggedUser]="(loggedUser$ | async)!"
+            (createOfferingEvent)="updateOffering(offering.self, $event)" [offering]="offering"></offering-data-form>
+    </div>
+</ng-template>
+
+<error-page *ngIf="(error$ | async) as error; else page" [errorCode]="error.status"
+    [errorDescription]="error.error.message" [actionMessage]="actionMessage"
+    (onAction)="goBackToDetails()"></error-page>

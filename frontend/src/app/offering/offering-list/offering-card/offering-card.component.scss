@@ -1,0 +1,121 @@
+mat-card {
+  box-shadow: none;
+  cursor: pointer;
+  background-color: transparent;
+
+  .like-icon-container {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin-right: 15px;
+    margin-top: 10px;
+    z-index: 1;
+
+    .like-icon {
+      width: 24px;
+      fill: rgba(0, 0, 0, 0.5);
+      stroke: white;
+      stroke-width: 2;
+    }
+
+    .like-icon.fill {
+      fill: red;
+    }
+  }
+
+  img {
+    width: 100%;
+    aspect-ratio: 1/1;
+    object-fit: cover;
+    border-radius: 20px;
+  }
+
+  .default-image {
+    padding: 30%;
+    filter: opacity(0.5);
+
+    background-color: #e0e0e0;
+  }
+
+  mat-card-footer {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-top: 0.5rem;
+
+    .title-container {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+
+      .title {
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .rating-container {
+        display: flex;
+        align-items: center;
+
+        .rating {
+          font-size: 1rem;
+        }
+
+        .rating-star {
+          font-size: 1.3rem;
+          color: #ffc107;
+        }
+      }
+    }
+
+    .owner-container {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 0.25rem;
+      max-width: 60%;
+
+      img {
+        width: 24px;
+        border-radius: 50%;
+      }
+
+      i {
+        font-size: 24px;
+      }
+
+      .owner-name {
+        margin: auto 0;
+        font-size: 0.8rem;
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+
+    .price-container {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      width: 100%;
+      align-items: center;
+      gap: 0.2rem;
+
+      img {
+        width: 18px;
+        margin-right: 0.5rem;
+        border-radius: 0;
+      }
+
+      .price-type {
+        white-space: nowrap;
+      }
+    }
+  }
+}

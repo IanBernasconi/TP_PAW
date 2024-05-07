@@ -1,0 +1,130 @@
+<div class="tab-content">
+    <div class="header">
+        <go-back-button (goBack)="exitChat.emit()"></go-back-button>
+        <ng-container *ngIf="(chatData$ | async)?.relations as relations">
+            <form [formGroup]="chatStatusForm">
+                <mat-form-field>
+                    <mat-label i18n>Status</mat-label>
+                    <mat-select formControlName="status" (selectionChange)="changeStatus($event)">
+                        <mat-option *ngFor="let status of Status | keyvalue" [value]="status.key">
+                            {{ status.value }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </form>
+        </ng-container>
+    </div>
+
+    <ng-container *ngIf="(sortedRelations$ | async) as relations">
+        <div *ngIf="relations.length > 0; else noRelations" class="chat-container">
+            <ng-container *ngIf="(events$ | async) as events">
+                <div class="chat-drawer-container">
+                    <div *ngFor="let relation of relations" (click)="selectRelation(relation)">
+                        <ng-container *ngIf="(lastMessagesByConversation$ | async) as lastMessagesByConversation ">
+                            <ng-container *ngIf="lastMessagesByConversation?.get(relation.self) as lastMessage">
+                                <chat-selector-card *ngIf="events.eventsByURI.get(relation.event) as event "
+                                    [name]="event.name" [lastMessage]="lastMessage"
+                                    [unreadMessages]="relation.providerUnreadMessagesCount">
+                                    <div *ngIf="!hideStatus" class="date-and-status-container">
+                                        <span class="badge rounded-pill bg-secondary">{{
+                                            event.date | date }}</span>
+                                        <span class="badge rounded-pill {{relation.status}}Style">
+                                            {{ OfferingStatus[relation.status] }}
+                                        </span>
+                                    </div>
+                                </chat-selector-card>
+                            </ng-container>
+                        </ng-container>
+                        <mat-divider></mat-divider>
+                    </div>
+                </div>
+                <mat-divider [vertical]="true"></mat-divider>
+                <div *ngIf="!currentRelation; else conversationSelected" class="no-conversation-container">
+                    <span *ngIf="!onlyDone">Select a service to start chatting</span>
+                    <span *ngIf="onlyDone">Select a service to see past conversations</span>
+                </div>
+                <ng-template #conversationSelected>
+                    <messages-container class="messages-container" (markAsRead)="markConversationAsRead($event)"
+                        [currentUser]="loggedUser" [offering]="offering" [relation]="currentRelation!"
+                        (onMessageSent)="updateLastMessage($event)"></messages-container>
+                    <mat-divider [vertical]="true"></mat-divider>
+                    <div *ngIf="events.eventsByURI.get(currentRelation!.event) as event"
+                        class="lateral-container bg-light">
+                        <div class="event-container bg-light">
+                            <div class="title-container">
+                                <h3 class="title">{{ event.name }}</h3>
+                            </div>
+                            <span class="info-badge">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" height="24"
+                                    fill="none" class="svg-icon">
+                                    <g stroke-width="2" stroke-linecap="round" stroke="#fff">
+                                        <rect y="5" x="4" width="16" rx="2" height="16"></rect>
+                                        <path d="m8 3v4"></path>
+                                        <path d="m16 3v4"></path>
+                                        <path d="m4 11h16"></path>
+                                    </g>
+                                </svg>
+                                <span>{{ event.date | date }}</span>
+                            </span>
+                            <span class="info-badge">
+                                <i class="bi bi-people-fill"></i>
+                                <span>
+                                    {{ event.numberOfGuests }}</span>
+                            </span>
+                            <span class="info-badge">
+                                <i class="bi bi-geo-alt-fill"></i>
+                                <span> {{ getDistrictValue(event.district) | async }} </span>
+                            </span>
+                            <p class="description"> {{ event.description }} </p>
+                        </div>
+                        <div class="change-status-container"
+                            *ngIf="currentRelation && currentRelation.status === 'PENDING'">
+                            <div class="buttons-container">
+                                <button class="btn btn-success" (click)="acceptRelation(currentRelation!)" i18n>
+                                    Accept
+                                </button>
+                                <button class="btn btn-danger" (click)="rejectRelation(currentRelation!)" i18n>
+                                    Reject
+                                </button>
+                            </div>
+                            <div class="warnings-container">
+                                <span *ngIf="isEventDateOccupied(event, offering.self) | async" class="error" i18n>
+                                    You have already accepted a service on this date
+                                </span>
+                                <span *ngIf="event.district != offering.district" class="error" i18n>
+                                    This event is not in the same district as your service
+                                </span>
+                                <span *ngIf="offering.maxGuests > 0 && event.numberOfGuests > offering.maxGuests"
+                                    class="error" i18n>
+                                    This service does not have capacity for {{ event.numberOfGuests }} guests
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </ng-template>
+            </ng-container>
+        </div>
+        <ng-template #noRelations>
+            <div class="no-relations-container">
+                <h3 class="text" i18n>This service has no conversations</h3>
+            </div>
+        </ng-template>
+    </ng-container>
+
+
+    <!-- 
+    <c:if test="${currentPendingEvent ne null}">
+        <div class="occupied-date-warning-container">
+            <c:forEach items="${occupiedDates}" var="occupiedDate">
+                <c:if test="${occupiedDate eq currentPendingEvent.date}">
+                    <span class="badge text-bg-warning"><i class="bi bi-exclamation-circle-fill"></i><spring:message code="myServices.chat.occupiedDateWarning"/></span>
+                </c:if>
+            </c:forEach>
+        </div>
+        <div class="occupied-date-warning-container">
+            <c:if test="${currentPendingEvent.district ne offering.district}">
+                <span class="badge text-bg-warning"><i class="bi bi-exclamation-circle-fill"></i><spring:message code="myServices.chat.differentDistrictWarning"/></span>
+            </c:if>
+        </div>
+    -->
+</div>

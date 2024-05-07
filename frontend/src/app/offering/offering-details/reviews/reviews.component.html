@@ -1,0 +1,20 @@
+<ng-container *ngIf="reviews && reviews.reviews?.length; else noReviews">
+  <mat-list-item *ngFor="let review of reviews.reviews; let isLast = last" class="review-container">
+    <div class="first-line">
+      <ngb-rating [max]="5" [(rate)]="review.rating" [readonly]="true"></ngb-rating>
+      <span class="date">{{ review.date | date }}</span>
+    </div>
+    <p class="review-content">
+      {{ review.review }}
+    </p>
+    <mat-divider *ngIf="!isLast" />
+  </mat-list-item>
+
+  <paginator [currentPage]="reviews.links.getCurrentPage()" [totalPages]="reviews.links.getPagesQuantity()"
+    (changeToNextPage)="pageChange.emit(reviews.links.getNextLink() ?? '')"
+    (changeToPreviousPage)="pageChange.emit(reviews.links.getPreviousLink() ?? '')"></paginator>
+</ng-container>
+
+<ng-template #noReviews>
+  <p i18n>There are no reviews for this service</p>
+</ng-template>

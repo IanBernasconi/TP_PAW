@@ -1,0 +1,20 @@
+<div class="btn btn-light info-container">
+  <div class="row-container">
+    <span class="name">{{ name }}</span>
+    <span *ngIf="lastMessage" class="time">
+      {{
+      lastMessage.timestamp
+      | date : (isToday(lastMessage.timestamp) ? "shortTime" : "mediumDate")
+      }}
+    </span>
+  </div>
+  <ng-content></ng-content>
+  <div class="row-container">
+    <span class="lastMessage" *ngIf="!!lastMessage">
+      {{ lastMessage.message }}
+    </span>
+    <div *ngIf="unreadMessages > 0" class="unread-messages-count">
+      <p>{{ unreadMessages }}</p>
+    </div>
+  </div>
+</div>

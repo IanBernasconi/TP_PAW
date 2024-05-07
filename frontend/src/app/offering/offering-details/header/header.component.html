@@ -1,0 +1,93 @@
+<div class="offering-hdr" *ngIf="offering">
+  <div class="offering-hdr__name h3">
+    <span>{{ offering.name }}</span>
+  </div>
+  <div *ngIf="loggedUser && loggedUser.self === offering.owner && !offering.deleted">
+    <button class="offering-hdr__edit-btn btn btn-dark btn-sm" (click)="editOffering()">
+      <span i18n>Edit</span>
+      <i class="bi bi-pencil-square"></i>
+    </button>
+    <button class="ms-3 btn btn-danger btn-sm" (click)="deleteOffering()">
+      <i class="bi bi-trash"></i>
+    </button>
+  </div>
+</div>
+<div class="offering-attr-line" *ngIf="offering">
+  <div class="offering-attr">
+    <i class="bi bi-tag"></i>
+    <a class="offering-attr__filter-button" [routerLink]="'/services'" [queryParams]="{ category: offering.category }">
+      {{ getCategoryValue() | async }}
+    </a>
+    <span>·</span>
+    <div class="d-flex d-row">
+      <i class="bi bi-currency-dollar"></i>
+      <ng-container *ngIf="offering.minPrice !== offering.maxPrice; else priceWithoutRange">
+        <a [routerLink]="'/services'" [queryParams]="{ 
+              category: offering.category,
+              minPrice: offering.minPrice,
+              maxPrice: offering.maxPrice
+              }" class="offering-attr__filter-button">
+          {{ offering.minPrice }} - {{ offering.maxPrice }}
+        </a>
+      </ng-container>
+      <ng-template #priceWithoutRange>
+        <a [routerLink]="'/services'" [queryParams]="{ category: offering.category, maxPrice: offering.maxPrice }"
+          class="offering-attr__filter-button">
+          {{ offering.minPrice }}
+        </a>
+      </ng-template>
+      <div *ngIf="offering.priceType !== 'OTHER'">
+        <span>{{ getPriceTypeValue(offering.priceType) | async }}</span>
+      </div>
+    </div>
+    <span>·</span>
+    <i class="bi bi-people"></i>
+    <a class="offering-attr__filter-button" [routerLink]="'/services'"
+      [queryParams]="{ attendees: offering.maxGuests === 0 ? 1000 : offering.maxGuests}">
+      {{ offering.maxGuests === 0 ? '1000+' : offering.maxGuests }}
+    </a>
+    <span>·</span>
+    <i class="bi bi-geo-alt"></i>
+    <a class="offering-attr__filter-button" [routerLink]="'/services'" [queryParams]="{ districts: offering.district }">
+      {{ getDistrictValue(offering.district) | async }}
+    </a>
+    <ng-container *ngIf="offering.rating && offering.rating !== 0">
+      <span>·</span>
+      <i class="bi bi-star-fill" style="color: #ffa723"></i>
+      <p>{{ offering.rating | number : "1.2-2" }}</p>
+    </ng-container>
+    <ng-container *ngIf="offering.likes > 0">
+      <span>·</span>
+      <div class="like-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" aria-hidden="true" role="presentation"
+          focusable="false" style="fill: #ff385c">
+          <path
+            d="M16 28c7-4.73 14-10 14-17a6.98 6.98 0 0 0-7-7c-1.8 0-3.58.68-4.95 2.05L16 8.1l-2.05-2.05a6.98 6.98 0 0 0-9.9 0A6.98 6.98 0 0 0 2 11c0 7 7 12.27 14 17z">
+          </path>
+        </svg>
+      </div>
+      <p>{{ offering.likes }}</p>
+    </ng-container>
+  </div>
+  <span *ngIf="offering.deleted; else likeButton" class="badge text-bg-warning" i18n>
+    This service has been deleted
+  </span>
+  <ng-template #likeButton>
+    <div *ngIf="loggedUser && loggedUser.self !== offering.owner" class="btn btn-sm btn-light like-button"
+      (click)="onLikeClick()">
+      <svg class="like-icon fill" *ngIf="isLiked" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"
+        role="presentation" focusable="false">
+        <path
+          d="M16 28c7-4.73 14-10 14-17a6.98 6.98 0 0 0-7-7c-1.8 0-3.58.68-4.95 2.05L16 8.1l-2.05-2.05a6.98 6.98 0 0 0-9.9 0A6.98 6.98 0 0 0 2 11c0 7 7 12.27 14 17z">
+        </path>
+      </svg>
+      <svg class="like-icon" *ngIf="!isLiked" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="presentation"
+        focusable="false">
+        <path
+          d="M16 28c7-4.73 14-10 14-17a6.98 6.98 0 0 0-7-7c-1.8 0-3.58.68-4.95 2.05L16 8.1l-2.05-2.05a6.98 6.98 0 0 0-9.9 0A6.98 6.98 0 0 0 2 11c0 7 7 12.27 14 17z">
+        </path>
+      </svg>
+      <span i18n>Like</span>
+    </div>
+  </ng-template>
+</div>

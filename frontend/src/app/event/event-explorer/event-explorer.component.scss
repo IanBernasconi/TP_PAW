@@ -1,0 +1,18 @@
+.content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  margin-top: 15px;
+}
+
+.header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+events-list {
+  flex: 1;
+}

@@ -1,0 +1,9 @@
+<div>
+    <h1 mat-dialog-title i18n>Are you sure you want to delete this service?</h1>
+    <mat-dialog-actions style="justify-content: space-between;">
+        <button mat-button mat-dialog-close cdkFocusInitial i18n>Cancel</button>
+        <button mat-raised-button [mat-dialog-close]="data" cdkFocusInitial color="primary" style="color: white;" i18n>
+            Confirm
+        </button>
+    </mat-dialog-actions>
+</div>

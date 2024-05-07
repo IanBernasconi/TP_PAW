@@ -1,0 +1,10 @@
+<div class="col-sm-2">
+  <select
+    class="form-select"
+    [(ngModel)]="eventsFilter"
+    (ngModelChange)="updateEventsFilter($event)"
+  >
+    <option value="active">Active</option>
+    <option value="finished">Finished</option>
+  </select>
+</div>

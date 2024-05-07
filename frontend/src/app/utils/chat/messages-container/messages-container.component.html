@@ -1,0 +1,57 @@
+<div class="messages-container" *ngIf="relation">
+  <div
+    class="messages-area"
+    #messagesArea
+    scrollDirective
+    infiniteScroll
+    [infiniteScrollUpDistance]="2"
+    [infiniteScrollThrottle]="50"
+    [scrollWindow]="false"
+    [infiniteScrollDisabled]="loading"
+    (scrolledUp)="fetchMoreMessages()"
+  >
+    <mat-spinner *ngIf="loading" [diameter]="50"></mat-spinner>
+    <ng-container *ngIf="messages">
+      <ng-container *ngFor="let item of messages.messagesByDateMap | keyvalue">
+        <div class="date-container">
+          <span class="date">{{ item.key | date : "dd/MM/yyyy" }}</span>
+        </div>
+        <div
+          *ngFor="let message of item.value"
+          class="message-container {{
+            message && message.sender == currentUser?.self ? 'sender' : ''
+          }}"
+        >
+          <span class="text">{{ message.message }}</span>
+          <span class="time-placeholder">{{
+            message.timestamp | date : "shortTime"
+          }}</span>
+          <div class="time-container">
+            <span class="message-time">{{
+              message.timestamp | date : "shortTime"
+            }}</span>
+          </div>
+        </div>
+      </ng-container>
+    </ng-container>
+  </div>
+  <div *ngIf="relation.status == 'DONE'" class="write-area">
+    <span>This event has already finished</span>
+  </div>
+  <div *ngIf="relation.status != 'DONE'" class="write-area">
+    <div class="send-message-container">
+      <form (ngSubmit)="sendMessage()" autocomplete="off">
+        <input
+          name="message"
+          class="form-control"
+          [formControl]="messageControl"
+          placeholder="Write a message"
+          i18n-placeholder
+        />
+        <button class="btn btn-send-message" type="submit">
+          <i class="bi bi-send"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

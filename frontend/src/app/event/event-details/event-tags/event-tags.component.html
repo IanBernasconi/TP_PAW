@@ -1,0 +1,40 @@
+<div class="tags-container" *ngIf="event">
+  <div *ngIf="event.date >= currentDate; else pastEvent" class="date date-color" (mouseout)="hoverDate = false"
+    (mouseover)="calculateDaysLeft(event.date); hoverDate = true">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" height="24" fill="none" class="svg-icon">
+      <g stroke-width="2" stroke-linecap="round" stroke="#fff">
+        <rect y="5" x="4" width="16" rx="2" height="16"></rect>
+        <path d="m8 3v4"></path>
+        <path d="m16 3v4"></path>
+        <path d="m4 11h16"></path>
+      </g>
+    </svg>
+    <span *ngIf="!hoverDate" class="date-label">{{
+      event.date | date : "dd/MM/yyyy"
+      }}</span>
+    <span class="date-label" *ngIf="hoverDate" i18n>
+      {{ daysLeft }} days left!
+    </span>
+  </div>
+  <ng-template #pastEvent>
+    <div class="date">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" height="24" fill="none" class="svg-icon">
+        <g stroke-width="2" stroke-linecap="round" stroke="#fff">
+          <rect y="5" x="4" width="16" rx="2" height="16"></rect>
+          <path d="m8 3v4"></path>
+          <path d="m16 3v4"></path>
+          <path d="m4 11h16"></path>
+        </g>
+      </svg>
+      <span class="date-label">{{ event.date | date : "dd.MM.yyyy" }}</span>
+    </div>
+  </ng-template>
+  <div class="number-of-guests">
+    <i class="bi- bi-people-fill svg-icon number-of-guests-icon"></i>
+    <span class="number-of-guests-label">{{ event.numberOfGuests }} </span>
+  </div>
+  <div class="district">
+    <i class="bi bi-geo-alt-fill svg-icon district-icon"></i>
+    <span class="district-label">{{ getDistrictValue(event.district) | async }}</span>
+  </div>
+</div>

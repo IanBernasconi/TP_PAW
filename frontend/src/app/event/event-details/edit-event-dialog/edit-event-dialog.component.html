@@ -1,0 +1,33 @@
+<div>
+  <h1 mat-dialog-title i18n>Edit Event</h1>
+  <div mat-dialog-content class="dialog-content">
+    <event-data-form
+      [loggedUser]="data.loggedUser"
+      [event]="data.event"
+      [hideSubmitButton]="true"
+      (editedEvent)="updateEvent($event)"
+      (isFormValid)="toggleValidForm($event)"
+    ></event-data-form>
+  </div>
+
+  <div class="warning-text-container">
+    <mat-icon>warning_amber</mat-icon>
+    <span i18n
+      >This will revert your contacted services to pending state until the
+      providers confirm they can accommodate the new event details</span
+    >
+  </div>
+  <mat-dialog-actions style="justify-content: space-between">
+    <button mat-button mat-dialog-close i18n>Cancel</button>
+    <button
+      mat-raised-button
+      [mat-dialog-close]="data"
+      color="primary"
+      style="color: white"
+      [disabled]="!isFormValid"
+      i18n
+    >
+      Confirm
+    </button>
+  </mat-dialog-actions>
+</div>

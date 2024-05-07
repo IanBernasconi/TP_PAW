@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title th:text="${title}"></title>
+    <style>
+
+        .contact-provider-table {
+            background-color: #FFFFFF;
+            border-radius: 9px;
+            width: 100%;
+            height: 100%;
+            padding: 10px;
+        }
+
+        .shadow {
+            width: 50%;
+            margin: 0 auto;
+            padding: 5px 10px 10px 5px;
+            border-radius: 11px;
+            background: linear-gradient(145deg, #ffffff, #e6e6e6);
+        }
+
+
+        .table-cell {
+            flex-direction: column;
+            padding: 10px;
+        }
+
+        .title-container {
+            padding: 30px 0 20px 0;
+        }
+
+        .title {
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .title-link {
+            text-decoration: none;
+        }
+
+        .divider {
+            margin-top: 24px;
+            margin-bottom: 24px;
+            border: 0;
+            border-bottom: 1px solid #c1c7d0;
+        }
+
+        .buttons-container {
+            display: flex;
+        }
+
+        .button-container {
+            text-align: center;
+            width: 100%;
+        }
+
+        .button {
+            background-color: #448FFF;
+            border: none;
+            color: #FFFFFF !important;
+            padding: 10px 15px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border-radius: 10px;
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+
+        .reject-button {
+            background-color: #212529;
+            border: none;
+            color: #FFFFFF !important;
+            padding: 10px 15px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border-radius: 10px;
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+
+        p {
+            color: inherit;
+            font-size: 18px;
+        }
+
+        h1 {
+            color: #448FFF;
+        }
+
+        h2 {
+            color: black;
+        }
+
+
+    </style>
+</head>
+<body>
+<div class="shadow">
+    <table class="contact-provider-table">
+        <tr>
+            <td class="table-cell title-container">
+                <a th:href="${detailsUrl}" class="title-link"><h1 class="title" th:text="${title}"></h1></a>
+            </td>
+        </tr>
+        <hr class="divider"/>
+        <tr>
+            <td class="table-cell">
+                <h2 th:text="${subtitle}"></h2>
+                <p th:text="${description}"></p>
+                <p th:text="${content}"></p>
+            </td>
+        </tr>
+        <tr class="buttons-container">
+            <td class="table-cell button-container">
+                <div class="button-container">
+                    <a th:href="${rejectUrl}" class="reject-button" th:text="${rejectButtonMessage}"></a>
+                </div>
+            </td>
+            <td class="table-cell button-container">
+                <div class="button-container">
+                    <a th:href="${acceptUrl}" class="button" th:text="${buttonMessage}"></a>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>

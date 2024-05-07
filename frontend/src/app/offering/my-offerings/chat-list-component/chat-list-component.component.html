@@ -1,0 +1,144 @@
+<div
+  class="tab-content"
+  *ngIf="!isLoading || selectedOffering; else loadingSkeleton"
+>
+  <div
+    *ngIf="
+      !selectedOffering && (offerings$ | async) as offerings;
+      else selectedChats
+    "
+    class="list-container"
+  >
+    <mat-grid-list
+      *ngIf="offerings && offerings.offerings as offeringsList"
+      [cols]="cols"
+      rowHeight="150px"
+      gutterSize="20px"
+    >
+      <mat-grid-tile *ngFor="let offering of offeringsList">
+        <mat-card>
+          <mat-card-header class="title">
+            <mat-card-title class="title">{{ offering.name }}</mat-card-title>
+            <mat-card-subtitle>{{ offering.category }}</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content
+            *ngIf="
+              conversationData &&
+                conversationData.get(offering.self) as relationsData;
+              else loadingRelationsSkeleton
+            "
+          >
+            <div
+              *ngIf="getRelationsAcceptedCount(relationsData) as acceptedCount"
+            >
+              <span class="badge rounded-pill ACCEPTEDStyle">
+                {{ acceptedCount
+                }}<ng-container *ngIf="!relationsData.links.isLastPage()"
+                  >+</ng-container
+                >
+                accepted
+              </span>
+            </div>
+            <div
+              *ngIf="getRelationsPendingCount(relationsData) as pendingCount"
+            >
+              <span i18n class="badge rounded-pill PENDINGStyle">
+                {{ pendingCount
+                }}<ng-container *ngIf="!relationsData.links.isLastPage()"
+                  >+</ng-container
+                >
+                pending
+              </span>
+            </div>
+            <div
+              *ngIf="
+                !getRelationsPendingCount(relationsData) &&
+                !getRelationsAcceptedCount(relationsData)
+              "
+            >
+              <span i18n>No events yet</span>
+            </div>
+          </mat-card-content>
+          <ng-template #loadingRelationsSkeleton>
+            <mat-card-content>
+              <ngx-skeleton-loader count="1" [theme]="{ width: '150px' }">
+              </ngx-skeleton-loader>
+            </mat-card-content>
+          </ng-template>
+          <mat-card-actions>
+            <button
+              [matBadge]="
+                hasUnreadMessages(offering) ? getUnreadCount(offering) : null
+              "
+              (click)="navigateToChat(offering)"
+              mat-button
+              i18n
+            >
+              Go to chat
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      </mat-grid-tile>
+    </mat-grid-list>
+
+    <paginator
+      *ngIf="offerings && offerings.offerings.length > 0"
+      [currentPage]="offerings.links.getCurrentPage()"
+      [totalPages]="offerings.links.getPagesQuantity()"
+      (changeToNextPage)="changeToNextPage.emit()"
+      (changeToPreviousPage)="changeToPreviousPage.emit()"
+    ></paginator>
+  </div>
+</div>
+
+<ng-template #selectedChats>
+  <offerings-chat
+    *ngIf="offerings$ | async"
+    [loggedUser]="loggedUser"
+    [offering]="selectedOffering!"
+    (exitChat)="exitChat()"
+  >
+  </offerings-chat>
+</ng-template>
+
+<ng-template #loadingSkeleton>
+  <div class="list-container" style="margin-top: 20px">
+    <mat-grid-list [cols]="cols" rowHeight="150px" gutterSize="20px">
+      <mat-grid-tile *ngFor="let offering of mockOfferings">
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title>
+              <ngx-skeleton-loader
+                [theme]="{ height: '30px', width: '300px' }"
+                count="1"
+              >
+              </ngx-skeleton-loader>
+            </mat-card-title>
+            <mat-card-subtitle>
+              <ngx-skeleton-loader
+                [theme]="{ height: '20px', width: '300px' }"
+                count="1"
+              >
+              </ngx-skeleton-loader>
+            </mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <ngx-skeleton-loader count="1" [theme]="{ width: '150px' }">
+            </ngx-skeleton-loader>
+          </mat-card-content>
+          <mat-card-actions>
+            <ngx-skeleton-loader
+              [theme]="{
+                height: '30px',
+                width: '100px',
+                'margin-left': '180px'
+              }"
+              count="1"
+            >
+            </ngx-skeleton-loader>
+          </mat-card-actions>
+        </mat-card>
+      </mat-grid-tile>
+    </mat-grid-list>
+  </div>
+</ng-template>
